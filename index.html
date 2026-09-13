@@ -22,6 +22,7 @@
         <span class="logo-mark" aria-hidden="true">◆</span>
         <span class="logo-text">STEADY SKILLS</span>
       </button>
+      <div class="status-avatar" id="status-avatar" aria-hidden="true"></div>
       <div class="status-stats" aria-live="polite">
         <span class="stat"><span class="stat-k">LVL</span> <span id="stat-level" class="neon-magenta">1</span></span>
         <span class="xp-wrap">
@@ -45,33 +46,74 @@
     <section id="view-create" class="view view-create" aria-labelledby="create-title">
       <div class="create-panel arcade-panel">
         <h1 id="create-title" class="view-title flicker">NEW OPERATIVE</h1>
-        <p class="lead">Sector 7 needs steady hands and clear minds. Create your character.</p>
+        <p class="lead">Sector 7 needs steady hands and clear minds. Build your look, pick a role, enter the plaza.</p>
 
-        <label class="field-label" for="create-name">CALLSIGN</label>
-        <input type="text" id="create-name" class="field-input" maxlength="16" placeholder="e.g. Nova" autocomplete="off" spellcheck="false" />
+        <div class="create-layout">
+          <div class="avatar-preview-wrap">
+            <div class="avatar-preview" id="avatar-preview" role="img" aria-label="Avatar preview"></div>
+            <p class="board-hint avatar-preview-label">LIVE PREVIEW</p>
+          </div>
 
-        <fieldset class="role-fieldset">
-          <legend class="field-label">CLASS / ROLE</legend>
-          <p class="board-hint">Same skills for all — roles flavor the story.</p>
-          <div class="role-picks" role="radiogroup" aria-label="Choose role">
-            <label class="role-card">
-              <input type="radio" name="role" value="medic" checked />
-              <span class="role-icon" aria-hidden="true">✚</span>
-              <span class="role-name">MEDIC CADET</span>
-              <span class="role-blurb">Calm under pressure. Patient-first.</span>
-            </label>
-            <label class="role-card">
-              <input type="radio" name="role" value="scout" />
-              <span class="role-icon" aria-hidden="true">◎</span>
-              <span class="role-name">SCOUT</span>
-              <span class="role-blurb">Eyes open. Paths clear.</span>
-            </label>
-            <label class="role-card">
-              <input type="radio" name="role" value="engineer" />
-              <span class="role-icon" aria-hidden="true">⚙</span>
-              <span class="role-name">ENGINEER</span>
-              <span class="role-blurb">Systems hum when you listen.</span>
-            </label>
+          <div class="create-fields">
+            <label class="field-label" for="create-name">CALLSIGN</label>
+            <input type="text" id="create-name" class="field-input" maxlength="16" placeholder="e.g. Nova" autocomplete="off" spellcheck="false" />
+
+            <fieldset class="role-fieldset">
+              <legend class="field-label">CLASS / ROLE</legend>
+              <p class="board-hint">Same skills for all — roles flavor the story.</p>
+              <div class="role-picks" role="radiogroup" aria-label="Choose role">
+                <label class="role-card">
+                  <input type="radio" name="role" value="medic" checked />
+                  <span class="role-icon" aria-hidden="true">✚</span>
+                  <span class="role-name">MEDIC CADET</span>
+                  <span class="role-blurb">Calm under pressure. Patient-first.</span>
+                </label>
+                <label class="role-card">
+                  <input type="radio" name="role" value="scout" />
+                  <span class="role-icon" aria-hidden="true">◎</span>
+                  <span class="role-name">SCOUT</span>
+                  <span class="role-blurb">Eyes open. Paths clear.</span>
+                </label>
+                <label class="role-card">
+                  <input type="radio" name="role" value="engineer" />
+                  <span class="role-icon" aria-hidden="true">⚙</span>
+                  <span class="role-name">ENGINEER</span>
+                  <span class="role-blurb">Systems hum when you listen.</span>
+                </label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <fieldset class="avatar-fieldset">
+          <legend class="field-label">PIXEL AVATAR</legend>
+          <p class="board-hint">Compose layers — large buttons, tap or keyboard.</p>
+
+          <div class="avatar-controls" id="avatar-controls">
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-skin">SKIN</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-skin" data-layer="skin"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-hair-style">HAIR STYLE</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-hair-style" data-layer="hairStyle"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-hair-color">HAIR COLOR</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-hair-color" data-layer="hairColor"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-outfit">OUTFIT TINT</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-outfit" data-layer="outfit"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-face">FACE ACCENT</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-face" data-layer="face"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-acc">ACCESSORY</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-acc" data-layer="accessory"></div>
+            </div>
           </div>
         </fieldset>
 
@@ -92,7 +134,10 @@
           <p id="loc-desc" class="lead">City lights flicker. Dispatch boards hum. Who do you talk to?</p>
 
           <div class="dialogue-panel arcade-panel" id="dialogue-panel" role="region" aria-label="Dialogue">
-            <p class="npc-name" id="npc-name">DISPATCH</p>
+            <div class="dialogue-head">
+              <div class="dialogue-avatar" id="dialogue-avatar" aria-hidden="true"></div>
+              <p class="npc-name" id="npc-name">DISPATCH</p>
+            </div>
             <p class="npc-line" id="npc-line">Welcome back, operative. Check the quest log — Sector 7 needs you steady.</p>
             <div class="dialogue-actions" id="dialogue-actions"></div>
           </div>
@@ -108,6 +153,7 @@
           <div class="quest-tabs" role="tablist">
             <button type="button" class="quest-tab active" data-tab="active" role="tab" aria-selected="true">ACTIVE</button>
             <button type="button" class="quest-tab" data-tab="available" role="tab" aria-selected="false">AVAILABLE</button>
+            <button type="button" class="quest-tab" data-tab="side" role="tab" aria-selected="false">SIDE</button>
             <button type="button" class="quest-tab" data-tab="completed" role="tab" aria-selected="false">DONE</button>
           </div>
           <ul class="quest-log-list" id="quest-log-list" role="list"></ul>
@@ -115,6 +161,11 @@
             <h3 class="daily-heading">DAILY DISPATCH <span id="daily-date" class="daily-date"></span></h3>
             <p id="daily-summary" class="daily-summary"></p>
             <button type="button" id="btn-daily" class="btn btn-arcade btn-secondary btn-sm">ACCEPT</button>
+          </div>
+          <div class="side-quest-box" id="side-quest-box">
+            <h3 class="daily-heading">SIDE QUESTS <span class="daily-date">PICTURE VIDEOS</span></h3>
+            <p class="daily-summary">Short illustrated stories ending in one light skill challenge.</p>
+            <button type="button" id="btn-side-menu" class="btn btn-arcade btn-secondary btn-sm">OPEN SIDE BOARD</button>
           </div>
         </aside>
       </div>
@@ -128,10 +179,35 @@
       </div>
       <h1 id="scene-title" class="view-title"></h1>
       <div class="dialogue-panel arcade-panel scene-dialogue">
-        <p class="npc-name" id="scene-npc"></p>
+        <div class="dialogue-head">
+          <div class="dialogue-avatar" id="scene-avatar" aria-hidden="true"></div>
+          <p class="npc-name" id="scene-npc"></p>
+        </div>
         <p class="npc-line" id="scene-text"></p>
       </div>
       <div class="scene-actions" id="scene-actions"></div>
+    </section>
+
+    <!-- SIDE QUEST PICTURE VIDEO -->
+    <section id="view-side" class="view view-side hidden" aria-labelledby="side-title" hidden>
+      <div class="scene-top">
+        <button type="button" class="btn btn-arcade btn-back" data-action="back-hub">◀ HUB</button>
+        <span id="side-progress" class="pill" aria-live="polite">PANEL 1/6</span>
+      </div>
+      <h1 id="side-title" class="view-title">SIDE QUEST</h1>
+      <div class="projector-frame" id="projector-frame">
+        <div class="filmstrip-top" aria-hidden="true"></div>
+        <div class="projector-screen" id="projector-screen">
+          <div class="panel-scene ken-burns" id="panel-scene" aria-hidden="true"></div>
+          <div class="panel-caption" id="panel-caption" role="status" aria-live="polite"></div>
+        </div>
+        <div class="filmstrip-bottom" aria-hidden="true"></div>
+        <div class="projector-controls">
+          <button type="button" id="btn-side-continue" class="btn btn-arcade btn-primary">CONTINUE ▶</button>
+          <button type="button" id="btn-side-skip" class="btn btn-arcade btn-ghost">SKIP TO CHALLENGE</button>
+        </div>
+      </div>
+      <p class="board-hint side-hint" id="side-hint">Tap CONTINUE or wait — story auto-advances. Mute respected.</p>
     </section>
 
     <!-- CHALLENGE -->

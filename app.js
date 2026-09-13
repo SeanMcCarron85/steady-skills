@@ -6,7 +6,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "steady-skills-rpg-v2";
+  const STORAGE_KEY = "steady-skills-rpg-v3";
+  const STORAGE_KEY_V2 = "steady-skills-rpg-v2";
   const XP_PER_LEVEL = 100;
 
   const ROLES = {
@@ -346,6 +347,186 @@
     },
   ];
 
+
+  // ---- Avatar options ----
+  const SKIN_TONES = [
+    { id: "fair", label: "FAIR", color: "#f5d0b0" },
+    { id: "warm", label: "WARM", color: "#d4a574" },
+    { id: "tan", label: "TAN", color: "#c68642" },
+    { id: "deep", label: "DEEP", color: "#8d5524" },
+    { id: "rich", label: "RICH", color: "#5c3317" },
+  ];
+  const HAIR_STYLES = [
+    { id: "short", label: "SHORT" },
+    { id: "buzz", label: "BUZZ" },
+    { id: "long", label: "LONG" },
+    { id: "pony", label: "PONY" },
+    { id: "bald", label: "BALD" },
+  ];
+  const HAIR_COLORS = [
+    { id: "black", label: "BLK", color: "#1a1a1a" },
+    { id: "brown", label: "BRN", color: "#4a3020" },
+    { id: "blonde", label: "BLN", color: "#d4a84b" },
+    { id: "red", label: "RED", color: "#a04030" },
+    { id: "pink", label: "PNK", color: "#ff71ce" },
+    { id: "cyan", label: "CYN", color: "#01cdfe" },
+  ];
+  const OUTFIT_TINTS = [
+    { id: "magenta", label: "MAG", color: "#ff71ce" },
+    { id: "cyan", label: "CYN", color: "#01cdfe" },
+    { id: "lime", label: "LIM", color: "#05ffa1" },
+    { id: "purple", label: "PRP", color: "#b967ff" },
+    { id: "yellow", label: "YEL", color: "#fffb96" },
+  ];
+  const FACE_ACCENTS = [
+    { id: "none", label: "NONE" },
+    { id: "smile", label: "SMILE" },
+    { id: "freckles", label: "FRECK" },
+    { id: "glasses", label: "GLASS" },
+    { id: "blush", label: "BLUSH" },
+  ];
+  const ACCESSORIES = [
+    { id: "none", label: "NONE" },
+    { id: "hat", label: "HAT" },
+    { id: "headset", label: "HEAD" },
+    { id: "badge", label: "BADGE" },
+    { id: "bandana", label: "BAND" },
+  ];
+
+  function defaultAvatar() {
+    return {
+      skin: "warm",
+      hairStyle: "short",
+      hairColor: "brown",
+      outfit: "magenta",
+      face: "none",
+      accessory: "none",
+    };
+  }
+
+  /**
+   * Side quests: short picture-style videos (SVG panels) + one light challenge.
+   */
+  const SIDE_QUESTS = {
+    "neon-alley": {
+      id: "neon-alley",
+      name: "NEON ALLEY ECHO",
+      blurb: "Follow a soft echo down the alley — then replay the pad pattern.",
+      skill: "memory",
+      challenge: "sequence",
+      challengeTitle: "ECHO PADS",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "alleyNight",
+          caption: "Pink rain on neon. An alley hums with a half-heard melody.",
+          duration: 5000,
+        },
+        {
+          scene: "alleyEcho",
+          caption: "Someone left a trail of glowing pad lights on the wet asphalt.",
+          duration: 5000,
+        },
+        {
+          scene: "alleyFollow",
+          caption: "You walk carefully. No rush. The city waits for steady minds.",
+          duration: 4500,
+        },
+        {
+          scene: "alleyDoor",
+          caption: "A service door blinks: REMEMBER THE PATTERN. One soft challenge ahead.",
+          duration: 5000,
+        },
+        {
+          scene: "alleyReady",
+          caption: "Breathe. Watch the echo. Replay what you heard — memory is enough.",
+          duration: 4500,
+        },
+      ],
+      completeBeat:
+        "The alley goes quiet, then kind. Neon settles. You carried the echo home.",
+    },
+    "rooftop-parcel": {
+      id: "rooftop-parcel",
+      name: "ROOFTOP PARCEL",
+      blurb: "A gentle rooftop handoff — steady taps seal the parcel.",
+      skill: "dexterity",
+      challenge: "targets",
+      challengeTitle: "SEAL TAPS",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "roofSky",
+          caption: "Dusk over Sector 7. A courier drone waits on the clinic roof.",
+          duration: 5000,
+        },
+        {
+          scene: "roofParcel",
+          caption: "The parcel is light — medicine labels, nothing flashy. Care first.",
+          duration: 4800,
+        },
+        {
+          scene: "roofPath",
+          caption: "Catwalk lights blink in sequence. Large targets. Your pace.",
+          duration: 4500,
+        },
+        {
+          scene: "roofWind",
+          caption: "Wind brushes the antenna. You steady your hands. Almost there.",
+          duration: 4500,
+        },
+        {
+          scene: "roofReady",
+          caption: "Tap each seal light as it appears. Miss one? The next still comes.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "The drone lifts kindly. Rooftop quiet returns. Parcel delivered — no drama needed.",
+    },
+    "waiting-whispers": {
+      id: "waiting-whispers",
+      name: "WAITING ROOM WHISPERS",
+      blurb: "Soft voices in the clinic lobby — practice clear, calm speech.",
+      skill: "speech",
+      challenge: "broadcast",
+      challengeTitle: "CALM WORDS",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "clinicLobby",
+          caption: "Clinic waiting room. Soft chairs. Soft lights. Soft worries.",
+          duration: 5000,
+        },
+        {
+          scene: "clinicChat",
+          caption: "A volunteer asks if you can help model clear check-in phrases.",
+          duration: 4800,
+        },
+        {
+          scene: "clinicBoard",
+          caption: "The board says: KIND VOICE PRACTICE. Mic never required.",
+          duration: 4500,
+        },
+        {
+          scene: "clinicCalm",
+          caption: "You sit. Shoulders ease. Words can be slow and still land.",
+          duration: 4500,
+        },
+        {
+          scene: "clinicReady",
+          caption: "Read each word at your pace. Model audio is there if you want it.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "A patient smiles. The room feels a little kinder. Whisper practice complete.",
+    },
+  };
+
   // ---- State ----
   let state = loadState();
   let muted = !!state.muted;
@@ -354,6 +535,8 @@
   let questTab = "available";
   let activeQuest = null; // runtime: { def, taskIndex, phase: 'intro'|'challenge'|'done' }
   let chalRuntime = null;
+  let sideRuntime = null; // { id, def, panelIndex, timer }
+  let draftAvatar = defaultAvatar();
 
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -405,6 +588,19 @@
     resultsRewards: $("#results-rewards"),
     levelupFlash: $("#levelup-flash"),
     levelupDetail: $("#levelup-detail"),
+    avatarPreview: $("#avatar-preview"),
+    statusAvatar: $("#status-avatar"),
+    dialogueAvatar: $("#dialogue-avatar"),
+    sceneAvatar: $("#scene-avatar"),
+    side: $("#view-side"),
+    sideTitle: $("#side-title"),
+    sideProgress: $("#side-progress"),
+    panelScene: $("#panel-scene"),
+    panelCaption: $("#panel-caption"),
+    btnSideContinue: $("#btn-side-continue"),
+    btnSideSkip: $("#btn-side-skip"),
+    btnSideMenu: $("#btn-side-menu"),
+    sideHint: $("#side-hint"),
   };
 
   // ---- Persistence ----
@@ -417,6 +613,7 @@
       created: false,
       name: "Operative",
       role: "medic",
+      avatar: defaultAvatar(),
       level: 1,
       xp: 0,
       gold: 0,
@@ -426,6 +623,7 @@
       location: "plaza",
       activeQuestIds: [],
       completedQuestIds: [],
+      completedSideQuestIds: [],
       questProgress: {}, // questId -> { taskIndex }
       dailyDate: todayKey(),
       dailyCompleted: false,
@@ -435,10 +633,31 @@
 
   function loadState() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      let raw = localStorage.getItem(STORAGE_KEY);
+      let fromV2 = false;
+      if (!raw) {
+        const v2 = localStorage.getItem(STORAGE_KEY_V2);
+        if (v2) {
+          raw = v2;
+          fromV2 = true;
+        }
+      }
       if (!raw) return defaultState();
       const parsed = { ...defaultState(), ...JSON.parse(raw) };
+      if (!parsed.avatar || typeof parsed.avatar !== "object") {
+        parsed.avatar = defaultAvatar();
+      } else {
+        parsed.avatar = { ...defaultAvatar(), ...parsed.avatar };
+      }
+      if (!Array.isArray(parsed.completedSideQuestIds)) {
+        parsed.completedSideQuestIds = [];
+      }
       refreshDailyFields(parsed);
+      if (fromV2) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+        } catch (_) {}
+      }
       return parsed;
     } catch {
       return defaultState();
@@ -551,6 +770,113 @@
     beep(180, 0.12, "sawtooth", 0.025);
   }
 
+
+  // ---- Avatar SVG ----
+  function avatarColors(av) {
+    const skin = (SKIN_TONES.find((s) => s.id === av.skin) || SKIN_TONES[1]).color;
+    const hair = (HAIR_COLORS.find((h) => h.id === av.hairColor) || HAIR_COLORS[1]).color;
+    const outfit = (OUTFIT_TINTS.find((o) => o.id === av.outfit) || OUTFIT_TINTS[0]).color;
+    return { skin, hair, outfit };
+  }
+
+  function renderAvatarSVG(av, size) {
+    const a = { ...defaultAvatar(), ...(av || {}) };
+    const { skin, hair, outfit } = avatarColors(a);
+    const s = size || 64;
+    let hairLayer = "";
+    if (a.hairStyle === "buzz") {
+      hairLayer = `<rect x="20" y="10" width="24" height="8" fill="${hair}"/>`;
+    } else if (a.hairStyle === "short") {
+      hairLayer = `<rect x="18" y="8" width="28" height="12" fill="${hair}"/><rect x="16" y="14" width="6" height="10" fill="${hair}"/><rect x="42" y="14" width="6" height="10" fill="${hair}"/>`;
+    } else if (a.hairStyle === "long") {
+      hairLayer = `<rect x="16" y="8" width="32" height="14" fill="${hair}"/><rect x="14" y="20" width="8" height="22" fill="${hair}"/><rect x="42" y="20" width="8" height="22" fill="${hair}"/>`;
+    } else if (a.hairStyle === "pony") {
+      hairLayer = `<rect x="18" y="8" width="28" height="12" fill="${hair}"/><rect x="44" y="18" width="8" height="18" fill="${hair}"/>`;
+    }
+    let faceLayer = "";
+    if (a.face === "smile") {
+      faceLayer = `<rect x="26" y="30" width="12" height="2" fill="#3a2030"/><rect x="28" y="32" width="8" height="2" fill="#3a2030"/>`;
+    } else if (a.face === "freckles") {
+      faceLayer = `<rect x="22" y="28" width="2" height="2" fill="#a06040"/><rect x="40" y="28" width="2" height="2" fill="#a06040"/><rect x="24" y="32" width="2" height="2" fill="#a06040"/><rect x="38" y="32" width="2" height="2" fill="#a06040"/>`;
+    } else if (a.face === "glasses") {
+      faceLayer = `<rect x="20" y="24" width="10" height="8" fill="none" stroke="${outfit}" stroke-width="2"/><rect x="34" y="24" width="10" height="8" fill="none" stroke="${outfit}" stroke-width="2"/><rect x="30" y="26" width="4" height="2" fill="${outfit}"/>`;
+    } else if (a.face === "blush") {
+      faceLayer = `<rect x="20" y="30" width="6" height="3" fill="#ff8fab" opacity="0.7"/><rect x="38" y="30" width="6" height="3" fill="#ff8fab" opacity="0.7"/>`;
+    }
+    let accLayer = "";
+    if (a.accessory === "hat") {
+      accLayer = `<rect x="16" y="4" width="32" height="6" fill="${outfit}"/><rect x="22" y="0" width="20" height="6" fill="${outfit}"/>`;
+    } else if (a.accessory === "headset") {
+      accLayer = `<rect x="14" y="18" width="4" height="12" fill="#01cdfe"/><rect x="46" y="18" width="4" height="12" fill="#01cdfe"/><rect x="14" y="16" width="36" height="3" fill="#01cdfe"/>`;
+    } else if (a.accessory === "badge") {
+      accLayer = `<rect x="38" y="48" width="8" height="8" fill="#fffb96"/><rect x="40" y="50" width="4" height="4" fill="#05ffa1"/>`;
+    } else if (a.accessory === "bandana") {
+      accLayer = `<rect x="18" y="16" width="28" height="5" fill="${outfit}"/><rect x="42" y="18" width="8" height="4" fill="${outfit}"/>`;
+    }
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${s}" height="${s}" shape-rendering="crispEdges" aria-hidden="true">
+      <rect width="64" height="64" fill="#0a0414"/>
+      <rect x="18" y="14" width="28" height="28" fill="${skin}"/>
+      <rect x="24" y="24" width="4" height="4" fill="#1a1020"/>
+      <rect x="36" y="24" width="4" height="4" fill="#1a1020"/>
+      <rect x="28" y="32" width="8" height="3" fill="#3a2030"/>
+      ${hairLayer}
+      ${faceLayer}
+      <rect x="14" y="42" width="36" height="18" fill="${outfit}"/>
+      <rect x="20" y="42" width="24" height="6" fill="${skin}"/>
+      ${accLayer}
+    </svg>`;
+  }
+
+  function paintAvatar(node, av) {
+    if (!node) return;
+    node.innerHTML = renderAvatarSVG(av || state.avatar, 64);
+  }
+
+  function syncAvatarPreviews() {
+    paintAvatar(el.avatarPreview, draftAvatar);
+    paintAvatar(el.statusAvatar, state.avatar);
+    paintAvatar(el.dialogueAvatar, state.avatar);
+    paintAvatar(el.sceneAvatar, state.avatar);
+  }
+
+  function buildAvatarControls() {
+    const layers = {
+      skin: SKIN_TONES.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
+      hairStyle: HAIR_STYLES.map((o) => ({ id: o.id, label: o.label })),
+      hairColor: HAIR_COLORS.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
+      outfit: OUTFIT_TINTS.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
+      face: FACE_ACCENTS.map((o) => ({ id: o.id, label: o.label })),
+      accessory: ACCESSORIES.map((o) => ({ id: o.id, label: o.label })),
+    };
+    $$("[data-layer]").forEach((row) => {
+      const key = row.getAttribute("data-layer");
+      const opts = layers[key] || [];
+      row.innerHTML = "";
+      opts.forEach((opt) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "avatar-opt" + (opt.swatch ? " swatch" : "");
+        btn.textContent = opt.swatch ? "" : opt.label;
+        if (opt.swatch) {
+          btn.style.setProperty("--swatch", opt.color);
+          btn.setAttribute("aria-label", `${key} ${opt.label}`);
+          btn.title = opt.label;
+        } else {
+          btn.setAttribute("aria-label", `${key} ${opt.label}`);
+        }
+        btn.setAttribute("aria-pressed", draftAvatar[key] === opt.id ? "true" : "false");
+        btn.addEventListener("click", () => {
+          draftAvatar[key] = opt.id;
+          // Role tint suggestion only on first create if outfit unchanged? keep free choice
+          buildAvatarControls();
+          paintAvatar(el.avatarPreview, draftAvatar);
+          beep(520, 0.04);
+        });
+        row.appendChild(btn);
+      });
+    });
+  }
+
   // ---- Status UI ----
   function refreshStatus() {
     el.level.textContent = String(state.level);
@@ -566,6 +892,7 @@
     el.muteBtn.setAttribute("aria-pressed", muted ? "true" : "false");
     el.muteBtn.textContent = muted ? "🔇" : "🔊";
     el.muteBtn.setAttribute("aria-label", muted ? "Unmute sounds" : "Mute sounds");
+    paintAvatar(el.statusAvatar, state.avatar);
   }
 
   // ---- Views ----
@@ -574,6 +901,7 @@
       create: el.create,
       hub: el.hub,
       scene: el.scene,
+      side: el.side,
       challenge: el.challenge,
       results: el.results,
     };
@@ -593,6 +921,7 @@
 
   function goHub() {
     cleanupChallenge();
+    cleanupSideVideo();
     activeQuest = null;
     showView("hub");
     renderHub();
@@ -617,6 +946,7 @@
     el.sceneNeon.textContent = loc.neon;
     el.npcName.textContent = loc.npc;
     el.npcLine.textContent = flavorLine(loc);
+    paintAvatar(el.dialogueAvatar, state.avatar);
     el.dialogueActions.innerHTML = "";
 
     // Suggest quests at this location
@@ -653,9 +983,27 @@
       hint.style.margin = "0";
       hint.textContent =
         loc.id === "plaza"
-          ? "Travel to the Tower, Docks, or Clinic — or check Daily Dispatch."
+          ? "Travel to the Tower, Docks, or Clinic — or check Daily / Side Quests."
           : "No new jobs here. Try another location or the quest log.";
       el.dialogueActions.appendChild(hint);
+    }
+
+    if (loc.id === "plaza") {
+      const sideBtn = document.createElement("button");
+      sideBtn.type = "button";
+      sideBtn.className = "btn btn-arcade btn-secondary";
+      sideBtn.textContent = "SIDE QUESTS (PICTURE VIDEOS)";
+      sideBtn.addEventListener("click", () => {
+        questTab = "side";
+        $$(".quest-tab").forEach((t) => {
+          const on = t.getAttribute("data-tab") === "side";
+          t.classList.toggle("active", on);
+          t.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        renderQuestLog();
+        beep(520, 0.05);
+      });
+      el.dialogueActions.appendChild(sideBtn);
     }
   }
 
@@ -696,7 +1044,12 @@
   }
 
   function resolveQuest(id) {
-    return QUESTS[id] || DAILY_TEMPLATES.find((d) => d.id === id) || null;
+    return (
+      QUESTS[id] ||
+      SIDE_QUESTS[id] ||
+      DAILY_TEMPLATES.find((d) => d.id === id) ||
+      null
+    );
   }
 
   function renderQuestLog() {
@@ -705,7 +1058,13 @@
     if (questTab === "active") {
       items = state.activeQuestIds.map(resolveQuest).filter(Boolean);
     } else if (questTab === "completed") {
-      items = state.completedQuestIds.map(resolveQuest).filter(Boolean);
+      const mainDone = state.completedQuestIds.map(resolveQuest).filter(Boolean);
+      const sideDone = (state.completedSideQuestIds || [])
+        .map((id) => SIDE_QUESTS[id])
+        .filter(Boolean);
+      items = [...mainDone, ...sideDone];
+    } else if (questTab === "side") {
+      items = Object.values(SIDE_QUESTS);
     } else {
       items = Object.values(QUESTS).filter(
         (q) =>
@@ -721,8 +1080,10 @@
         questTab === "active"
           ? "No active quests. Accept one from Available or a location NPC."
           : questTab === "completed"
-          ? "No completed story quests yet."
-          : "All story quests accepted or done. Check Daily!";
+          ? "No completed story or side quests yet."
+          : questTab === "side"
+          ? "No side quests loaded."
+          : "All story quests accepted or done. Check Daily or Side!";
       el.questLogList.appendChild(empty);
       return;
     }
@@ -730,22 +1091,48 @@
     items.forEach((q) => {
       const li = document.createElement("li");
       const btn = document.createElement("button");
+      const isSide = !!SIDE_QUESTS[q.id];
+      const sideDone =
+        isSide && (state.completedSideQuestIds || []).includes(q.id);
       btn.type = "button";
-      btn.className = "quest-log-item" + (questTab === "completed" ? " done" : "");
-      const skills = [...new Set(q.tasks.map((t) => SKILL_LABELS[t.skill]))].join(" · ");
-      const prog = state.questProgress[q.id];
-      const meta =
-        questTab === "active" && prog
-          ? `Task ${(prog.taskIndex || 0) + 1}/${q.tasks.length} · ${skills}`
-          : questTab === "completed"
-          ? "CLEARED · " + skills
-          : `${q.tasks.length} tasks · ${skills}`;
+      btn.className =
+        "quest-log-item" +
+        (questTab === "completed" || sideDone ? " done" : "");
+      let skills = "";
+      let meta = "";
+      if (isSide) {
+        skills = SKILL_LABELS[q.skill] || q.skill;
+        meta = sideDone
+          ? "CLEARED · picture video · " + skills
+          : `Picture video · ${q.panels.length} panels · ${skills}`;
+      } else {
+        skills = [...new Set(q.tasks.map((t) => SKILL_LABELS[t.skill]))].join(" · ");
+        const prog = state.questProgress[q.id];
+        meta =
+          questTab === "active" && prog
+            ? `Task ${(prog.taskIndex || 0) + 1}/${q.tasks.length} · ${skills}`
+            : questTab === "completed"
+            ? "CLEARED · " + skills
+            : `${q.tasks.length} tasks · ${skills}`;
+      }
       btn.innerHTML = `<span class="ql-title">${q.name}</span><span class="ql-meta">${meta}</span>`;
       btn.addEventListener("click", () => {
+        if (isSide) {
+          if (sideDone && questTab === "completed") {
+            el.npcName.textContent = "SIDE QUEST";
+            el.npcLine.textContent = q.completeBeat;
+            el.dialogueActions.innerHTML = "";
+            paintAvatar(el.dialogueAvatar, state.avatar);
+            return;
+          }
+          startSideQuest(q.id);
+          return;
+        }
         if (questTab === "completed") {
           el.npcName.textContent = q.giver;
           el.npcLine.textContent = q.completeBeat;
           el.dialogueActions.innerHTML = "";
+          paintAvatar(el.dialogueAvatar, state.avatar);
           return;
         }
         if (questTab === "available") acceptQuest(q.id);
@@ -837,6 +1224,7 @@
     el.questProgress.textContent = `TASK ${activeQuest.taskIndex + 1}/${activeQuest.def.tasks.length}`;
     el.sceneNpc.textContent = task.introNpc;
     el.sceneText.textContent = task.intro;
+    paintAvatar(el.sceneAvatar, state.avatar);
     el.sceneActions.innerHTML = "";
     const go = document.createElement("button");
     go.type = "button";
@@ -862,6 +1250,7 @@
     el.questProgress.textContent = `TASK ${activeQuest.taskIndex + 1}/${activeQuest.def.tasks.length} ✓`;
     el.sceneNpc.textContent = task.doneNpc;
     el.sceneText.textContent = task.done;
+    paintAvatar(el.sceneAvatar, state.avatar);
     el.sceneActions.innerHTML = "";
     const next = document.createElement("button");
     next.type = "button";
@@ -879,6 +1268,10 @@
   }
 
   function finishQuest() {
+    if (activeQuest && activeQuest.isSide) {
+      finishSideQuestRewards();
+      return;
+    }
     const def = activeQuest.def;
     const isDaily = activeQuest.isDaily;
     const id = activeQuest.id;
@@ -914,6 +1307,274 @@
       el.levelupFlash.classList.add("hidden");
       el.levelupFlash.setAttribute("hidden", "");
     }
+    activeQuest = null;
+    showView("results");
+  }
+
+
+  // ---- Side quest picture videos ----
+  function prefersReducedMotion() {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      return false;
+    }
+  }
+
+  function panelSceneSVG(sceneId) {
+    const scenes = {
+      alleyNight: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <rect x="0" y="140" width="320" height="60" fill="#1a0a28"/>
+        <rect x="20" y="40" width="60" height="100" fill="#16082a"/>
+        <rect x="100" y="20" width="80" height="120" fill="#1e0d38"/>
+        <rect x="220" y="50" width="70" height="90" fill="#16082a"/>
+        <rect x="30" y="70" width="20" height="12" fill="#ff71ce"/>
+        <rect x="120" y="50" width="30" height="10" fill="#01cdfe"/>
+        <rect x="230" y="80" width="24" height="10" fill="#05ffa1"/>
+        <text x="160" y="30" text-anchor="middle" fill="#ff71ce" font-size="10" font-family="monospace">NEON ALLEY</text>
+      `,
+      alleyEcho: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <rect x="0" y="150" width="320" height="50" fill="#12061f"/>
+        <circle cx="80" cy="160" r="8" fill="#ff71ce"/>
+        <circle cx="140" cy="155" r="8" fill="#01cdfe"/>
+        <circle cx="200" cy="162" r="8" fill="#05ffa1"/>
+        <circle cx="250" cy="158" r="8" fill="#fffb96"/>
+        <rect x="40" y="40" width="50" height="110" fill="#1a0a2e"/>
+        <rect x="230" y="30" width="60" height="120" fill="#1e0d38"/>
+        <text x="160" y="90" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">PAD ECHO</text>
+      `,
+      alleyFollow: `
+        <rect width="320" height="200" fill="#080314"/>
+        <polygon points="160,40 40,180 280,180" fill="#16082a"/>
+        <rect x="145" y="100" width="30" height="40" fill="#ff71ce" opacity="0.5"/>
+        <circle cx="100" cy="170" r="5" fill="#01cdfe"/>
+        <circle cx="160" cy="175" r="5" fill="#05ffa1"/>
+        <circle cx="220" cy="170" r="5" fill="#fffb96"/>
+        <text x="160" y="30" text-anchor="middle" fill="#01cdfe" font-size="9" font-family="monospace">FOLLOW…</text>
+      `,
+      alleyDoor: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <rect x="110" y="40" width="100" height="140" fill="#1a0a2e" stroke="#ff71ce" stroke-width="3"/>
+        <rect x="150" y="100" width="12" height="12" fill="#05ffa1"/>
+        <text x="160" y="70" text-anchor="middle" fill="#fffb96" font-size="8" font-family="monospace">SERVICE</text>
+        <text x="160" y="185" text-anchor="middle" fill="#01cdfe" font-size="8" font-family="monospace">REMEMBER</text>
+      `,
+      alleyReady: `
+        <rect width="320" height="200" fill="#0d0520"/>
+        <rect x="60" y="60" width="40" height="40" fill="#ff71ce"/>
+        <rect x="120" y="60" width="40" height="40" fill="#01cdfe"/>
+        <rect x="180" y="60" width="40" height="40" fill="#05ffa1"/>
+        <rect x="240" y="60" width="40" height="40" fill="#fffb96"/>
+        <text x="160" y="140" text-anchor="middle" fill="#f0e6ff" font-size="10" font-family="monospace">READY</text>
+      `,
+      roofSky: `
+        <rect width="320" height="200" fill="#12082a"/>
+        <rect x="0" y="130" width="320" height="70" fill="#1a1030"/>
+        <rect x="40" y="90" width="100" height="50" fill="#2a1848"/>
+        <rect x="200" y="70" width="80" height="70" fill="#241040"/>
+        <circle cx="260" cy="40" r="14" fill="#fffb96" opacity="0.8"/>
+        <text x="160" y="50" text-anchor="middle" fill="#01cdfe" font-size="9" font-family="monospace">ROOFTOP</text>
+      `,
+      roofParcel: `
+        <rect width="320" height="200" fill="#0e0620"/>
+        <rect x="120" y="80" width="80" height="50" fill="#05ffa1" opacity="0.85"/>
+        <rect x="130" y="90" width="60" height="8" fill="#0a0414"/>
+        <rect x="150" y="60" width="20" height="20" fill="#01cdfe"/>
+        <text x="160" y="160" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">PARCEL</text>
+      `,
+      roofPath: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <rect x="20" y="100" width="280" height="16" fill="#3a2060"/>
+        <circle cx="70" cy="108" r="10" fill="#ff71ce"/>
+        <circle cx="140" cy="108" r="10" fill="#01cdfe"/>
+        <circle cx="210" cy="108" r="10" fill="#05ffa1"/>
+        <circle cx="270" cy="108" r="10" fill="#fffb96"/>
+        <text x="160" y="60" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">CATWALK</text>
+      `,
+      roofWind: `
+        <rect width="320" height="200" fill="#100620"/>
+        <rect x="150" y="30" width="20" height="100" fill="#4a3080"/>
+        <rect x="140" y="20" width="40" height="12" fill="#01cdfe"/>
+        <path d="M40 80 Q80 60 120 80" stroke="#ff71ce" stroke-width="3" fill="none"/>
+        <path d="M200 90 Q240 70 280 95" stroke="#05ffa1" stroke-width="3" fill="none"/>
+        <text x="160" y="170" text-anchor="middle" fill="#f0e6ff" font-size="9" font-family="monospace">STEADY</text>
+      `,
+      roofReady: `
+        <rect width="320" height="200" fill="#0d0520"/>
+        <circle cx="100" cy="100" r="22" fill="#ff71ce"/>
+        <circle cx="160" cy="100" r="22" fill="#01cdfe"/>
+        <circle cx="220" cy="100" r="22" fill="#05ffa1"/>
+        <text x="160" y="160" text-anchor="middle" fill="#fffb96" font-size="10" font-family="monospace">TAP SEALS</text>
+      `,
+      clinicLobby: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <rect x="0" y="140" width="320" height="60" fill="#1a2830"/>
+        <rect x="30" y="100" width="50" height="40" fill="#2a4050"/>
+        <rect x="100" y="100" width="50" height="40" fill="#2a4050"/>
+        <rect x="200" y="40" width="90" height="100" fill="#1e3040" stroke="#05ffa1" stroke-width="2"/>
+        <text x="160" y="30" text-anchor="middle" fill="#05ffa1" font-size="9" font-family="monospace">CLINIC</text>
+      `,
+      clinicChat: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <circle cx="110" cy="90" r="22" fill="#d4a574"/>
+        <circle cx="210" cy="90" r="22" fill="#c68642"/>
+        <rect x="90" y="112" width="40" height="30" fill="#01cdfe"/>
+        <rect x="190" y="112" width="40" height="30" fill="#b967ff"/>
+        <text x="160" y="170" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">VOLUNTEER</text>
+      `,
+      clinicBoard: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <rect x="60" y="40" width="200" height="110" fill="#1a2830" stroke="#05ffa1" stroke-width="3"/>
+        <text x="160" y="80" text-anchor="middle" fill="#05ffa1" font-size="10" font-family="monospace">KIND VOICE</text>
+        <text x="160" y="105" text-anchor="middle" fill="#01cdfe" font-size="9" font-family="monospace">PRACTICE</text>
+        <text x="160" y="130" text-anchor="middle" fill="#a890c0" font-size="8" font-family="monospace">MIC OPTIONAL</text>
+      `,
+      clinicCalm: `
+        <rect width="320" height="200" fill="#0c1820"/>
+        <rect x="100" y="90" width="120" height="50" fill="#243848"/>
+        <circle cx="160" cy="70" r="20" fill="#d4a574"/>
+        <text x="160" y="170" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">BREATHE</text>
+      `,
+      clinicReady: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <text x="160" y="70" text-anchor="middle" fill="#05ffa1" font-size="14" font-family="monospace">STEADY</text>
+        <text x="160" y="100" text-anchor="middle" fill="#01cdfe" font-size="14" font-family="monospace">BRIGHT</text>
+        <text x="160" y="130" text-anchor="middle" fill="#fffb96" font-size="14" font-family="monospace">CALM</text>
+        <text x="160" y="170" text-anchor="middle" fill="#a890c0" font-size="9" font-family="monospace">YOUR PACE</text>
+      `,
+    };
+    const body = scenes[sceneId] || scenes.alleyNight;
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges">${body}</svg>`;
+  }
+
+  function sfxPanel() {
+    beep(440, 0.05, "triangle", 0.03);
+  }
+
+  function cleanupSideVideo() {
+    if (sideRuntime && sideRuntime.timer) {
+      clearTimeout(sideRuntime.timer);
+    }
+    sideRuntime = null;
+  }
+
+  function startSideQuest(id) {
+    const def = SIDE_QUESTS[id];
+    if (!def) return;
+    cleanupSideVideo();
+    cleanupChallenge();
+    sideRuntime = {
+      id,
+      def,
+      panelIndex: 0,
+      timer: null,
+      fromVideo: true,
+    };
+    showView("side");
+    el.sideTitle.textContent = def.name;
+    showSidePanel(0);
+  }
+
+  function showSidePanel(index) {
+    if (!sideRuntime) return;
+    const def = sideRuntime.def;
+    const panels = def.panels;
+    if (index >= panels.length) {
+      beginSideChallenge();
+      return;
+    }
+    sideRuntime.panelIndex = index;
+    const panel = panels[index];
+    el.sideProgress.textContent = `PANEL ${index + 1}/${panels.length}`;
+    el.panelScene.innerHTML = panelSceneSVG(panel.scene);
+    el.panelCaption.textContent = panel.caption;
+    const reduce = prefersReducedMotion();
+    el.panelScene.classList.toggle("ken-burns", !reduce);
+    sfxPanel();
+    if (sideRuntime.timer) clearTimeout(sideRuntime.timer);
+    const dur = reduce ? Math.max(panel.duration, 7000) : panel.duration;
+    sideRuntime.timer = setTimeout(() => {
+      showSidePanel(index + 1);
+    }, dur);
+    el.btnSideContinue.textContent =
+      index + 1 >= panels.length ? "BEGIN CHALLENGE ▶" : "CONTINUE ▶";
+    el.sideHint.textContent = reduce
+      ? "Reduced motion on — tap CONTINUE when ready. Auto-advance is slower."
+      : "Tap CONTINUE or wait — story auto-advances. Mute respected.";
+  }
+
+  function beginSideChallenge() {
+    if (!sideRuntime) return;
+    if (sideRuntime.timer) {
+      clearTimeout(sideRuntime.timer);
+      sideRuntime.timer = null;
+    }
+    const def = sideRuntime.def;
+    const task = {
+      id: def.id + "-chal",
+      skill: def.skill,
+      challenge: def.challenge,
+      title: def.challengeTitle || def.name,
+      introNpc: "SIDE QUEST",
+      intro: def.blurb,
+      doneNpc: "SIDE QUEST",
+      done: def.completeBeat,
+      _sideQuestId: def.id,
+    };
+    // Use a lightweight activeQuest wrapper so finishChallenge -> showTaskDone works,
+    // but intercept finish for side quests.
+    activeQuest = {
+      id: def.id,
+      def: {
+        id: def.id,
+        name: def.name,
+        tasks: [task],
+        xpBonus: def.xpBonus,
+        goldBonus: def.goldBonus,
+        completeBeat: def.completeBeat,
+      },
+      taskIndex: 0,
+      isDaily: false,
+      isSide: true,
+    };
+    sideRuntime.fromVideo = false;
+    startChallenge(task);
+  }
+
+  function finishSideQuestRewards() {
+    const def = sideRuntime ? sideRuntime.def : activeQuest && SIDE_QUESTS[activeQuest.id];
+    if (!def) {
+      goHub();
+      return;
+    }
+    const xp = def.xpBonus || 28;
+    const gold = def.goldBonus || 14;
+    const { leveled, newLevel } = award(xp, gold);
+    sfxComplete();
+    if (!state.completedSideQuestIds.includes(def.id)) {
+      state.completedSideQuestIds.push(def.id);
+    }
+    state.activeQuestIds = state.activeQuestIds.filter((x) => x !== def.id);
+    delete state.questProgress[def.id];
+    saveState();
+    el.resultsTitle.textContent = "SIDE QUEST CLEAR";
+    el.resultsMessage.textContent = def.completeBeat;
+    el.resultsRewards.innerHTML = `
+      <div>SIDE BONUS +${xp} XP</div>
+      <div>SIDE BONUS +${gold} GOLD</div>
+    `;
+    if (leveled) {
+      el.levelupFlash.classList.remove("hidden");
+      el.levelupFlash.removeAttribute("hidden");
+      el.levelupDetail.textContent = `You reached LEVEL ${newLevel}`;
+      sfxLevelUp();
+    } else {
+      el.levelupFlash.classList.add("hidden");
+      el.levelupFlash.setAttribute("hidden", "");
+    }
+    cleanupSideVideo();
     activeQuest = null;
     showView("results");
   }
@@ -1803,12 +2464,26 @@
       state.created = true;
       state.name = name;
       state.role = role;
+      state.avatar = { ...defaultAvatar(), ...draftAvatar };
       state.location = "plaza";
       currentLocation = "plaza";
       saveState();
       sfxComplete();
+      refreshStatus();
       showView("hub");
       renderHub();
+    });
+
+    // Live avatar: role cards can gently suggest outfit tint (optional, non-destructive)
+    $$('input[name="role"]').forEach((inp) => {
+      inp.addEventListener("change", () => {
+        const map = { medic: "lime", scout: "cyan", engineer: "yellow" };
+        if (map[inp.value]) {
+          draftAvatar.outfit = map[inp.value];
+          buildAvatarControls();
+          paintAvatar(el.avatarPreview, draftAvatar);
+        }
+      });
     });
 
     el.createName.addEventListener("keydown", (e) => {
@@ -1857,21 +2532,51 @@
       }
     });
 
+    if (el.btnSideContinue) {
+      el.btnSideContinue.addEventListener("click", () => {
+        if (!sideRuntime) return;
+        const next = sideRuntime.panelIndex + 1;
+        if (sideRuntime.timer) clearTimeout(sideRuntime.timer);
+        showSidePanel(next);
+      });
+    }
+    if (el.btnSideSkip) {
+      el.btnSideSkip.addEventListener("click", () => {
+        if (!sideRuntime) return;
+        if (sideRuntime.timer) clearTimeout(sideRuntime.timer);
+        beginSideChallenge();
+      });
+    }
+    if (el.btnSideMenu) {
+      el.btnSideMenu.addEventListener("click", () => {
+        questTab = "side";
+        $$(".quest-tab").forEach((t) => {
+          const on = t.getAttribute("data-tab") === "side";
+          t.classList.toggle("active", on);
+          t.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        renderQuestLog();
+        beep(520, 0.05);
+      });
+    }
+
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("[data-action]");
       if (!btn) return;
       const action = btn.getAttribute("data-action");
       if (action === "back-hub") {
-        if (activeQuest) {
+        if (activeQuest && !activeQuest.isSide) {
           state.questProgress[activeQuest.id] = { taskIndex: activeQuest.taskIndex };
           saveState();
         }
         goHub();
       }
       if (action === "abort-challenge") {
-        // Return to task intro without losing progress
         cleanupChallenge();
-        if (activeQuest) showTaskIntro();
+        if (activeQuest && activeQuest.isSide) {
+          // Return to last side panel rather than main task intro
+          startSideQuest(activeQuest.id);
+        } else if (activeQuest) showTaskIntro();
         else goHub();
       }
     });
@@ -1886,7 +2591,10 @@
   }
 
   // Boot
+  draftAvatar = { ...defaultAvatar(), ...(state.avatar || {}) };
   bindGlobal();
+  buildAvatarControls();
+  paintAvatar(el.avatarPreview, draftAvatar);
   muted = !!state.muted;
   currentLocation = state.location || "plaza";
   if (state.created) {
