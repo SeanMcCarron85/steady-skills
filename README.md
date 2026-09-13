@@ -4,7 +4,13 @@ An **80s role-based adventure** for MS patients. You play a character in Sector 
 
 Zero build step. Progress in `localStorage` (`steady-skills-rpg-v4`; migrates from v3/v2). Mic never required.
 
-## How to run
+## Live demo (GitHub Pages / PWA)
+
+**Play / install:** [https://seanmccarron85.github.io/steady-skills/](https://seanmccarron85.github.io/steady-skills/)
+
+On phone: open that link → browser menu → **Add to Home Screen** / **Install app**. HTTPS is already on; the service worker enables an offline shell.
+
+## How to run locally
 
 ```bash
 python3 -m http.server 8765 --bind 0.0.0.0
@@ -136,7 +142,27 @@ In Xcode: select a team/signing certificate, run on Simulator or device. App Sto
 | `npm run cap:android` | `build` + sync Android + open Android Studio |
 | `npm run cap:ios` | `build` + sync iOS + open Xcode (macOS) |
 
-### Store builds (manual for Sean)
+### Store builds checklist (manual)
 
-- **Play Store / App Store**: create signing keys, set version codes, privacy policy, screenshots, and submit in the respective consoles. Capacitor only produces the native project shells.
-- Keep serving the static root (or `www/`) for web/PWA; native apps load from the synced `www/` bundle.
+Capacitor gives you native shells — store listing & signing are still on you:
+
+**Google Play**
+1. Install Android Studio; open `android/` via `npm run cap:android`
+2. Create a Play Console app + upload key / Play App Signing
+3. Set `versionCode` / `versionName` in `android/app/build.gradle`
+4. Privacy policy URL (required for many permissions; even a simple page helps)
+5. Store listing: title, short/full description, screenshots (phone + tablet), feature graphic
+6. Content rating questionnaire; target API level per Play policy
+7. Internal testing track → closed → production
+
+**Apple App Store**
+1. Mac + Xcode + Apple Developer Program ($99/yr)
+2. `npm run cap:ios`, set Team + Bundle ID (`com.steadyskills.rpg`)
+3. Icons/splash already stubbed — replace with final brand assets before submit
+4. App Privacy labels (nutrition labels) in App Store Connect
+5. Screenshots for required device sizes; age rating
+6. TestFlight internal → external → App Review
+
+**Shared**
+- Keep web/PWA at the Pages URL above for demos while native builds cook
+- Native apps load the synced `www/` bundle after `npm run cap:sync`
