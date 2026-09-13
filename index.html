@@ -103,11 +103,19 @@
               <div class="avatar-opt-row" role="group" aria-labelledby="lbl-hair-color" data-layer="hairColor"></div>
             </div>
             <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-outfit-style">OUTFIT STYLE</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-outfit-style" data-layer="outfitStyle"></div>
+            </div>
+            <div class="avatar-control-row">
               <span class="avatar-ctrl-label" id="lbl-outfit">OUTFIT TINT</span>
               <div class="avatar-opt-row" role="group" aria-labelledby="lbl-outfit" data-layer="outfit"></div>
             </div>
             <div class="avatar-control-row">
-              <span class="avatar-ctrl-label" id="lbl-face">FACE ACCENT</span>
+              <span class="avatar-ctrl-label" id="lbl-eyes">EYE STYLE</span>
+              <div class="avatar-opt-row" role="group" aria-labelledby="lbl-eyes" data-layer="eyes"></div>
+            </div>
+            <div class="avatar-control-row">
+              <span class="avatar-ctrl-label" id="lbl-face">FACE / PAINT</span>
               <div class="avatar-opt-row" role="group" aria-labelledby="lbl-face" data-layer="face"></div>
             </div>
             <div class="avatar-control-row">
@@ -166,6 +174,11 @@
             <h3 class="daily-heading">SIDE QUESTS <span class="daily-date">PICTURE VIDEOS</span></h3>
             <p class="daily-summary">Short illustrated stories ending in one light skill challenge.</p>
             <button type="button" id="btn-side-menu" class="btn btn-arcade btn-secondary btn-sm">OPEN SIDE BOARD</button>
+          </div>
+          <div class="loadout-box" id="loadout-box">
+            <h3 class="daily-heading">LOADOUT <span class="daily-date">TREASURES</span></h3>
+            <p class="daily-summary" id="loadout-summary">Earn treasures from side quests. Equip for gentle skill buffs.</p>
+            <button type="button" id="btn-loadout" class="btn btn-arcade btn-secondary btn-sm">OPEN LOADOUT</button>
           </div>
         </aside>
       </div>
@@ -226,6 +239,30 @@
       <div id="chal-stage" class="mission-stage" role="region" aria-label="Challenge play area"></div>
       <div id="chal-feedback" class="feedback" role="status" aria-live="polite"></div>
       <div id="chal-actions" class="mission-actions"></div>
+    </section>
+
+    <!-- LOADOUT / TREASURES -->
+    <section id="view-loadout" class="view view-loadout hidden" aria-labelledby="loadout-title" hidden>
+      <div class="scene-top">
+        <button type="button" class="btn btn-arcade btn-back" data-action="back-hub">◀ HUB</button>
+        <span class="pill neon-lime" id="loadout-count">0 TREASURES</span>
+      </div>
+      <h1 id="loadout-title" class="view-title">LOADOUT</h1>
+      <p class="lead">Equip treasures for gentle accessibility buffs. Large targets stay large even without gear.</p>
+
+      <div class="loadout-layout">
+        <div class="arcade-panel loadout-char">
+          <h2 class="board-heading"><span class="neon-cyan">◆</span> OPERATIVE</h2>
+          <div class="loadout-avatar" id="loadout-avatar" aria-hidden="true"></div>
+          <p class="board-hint" id="loadout-char-name">—</p>
+          <div id="active-buffs" class="active-buffs" aria-live="polite"></div>
+        </div>
+        <div class="arcade-panel loadout-inv">
+          <h2 class="board-heading"><span class="neon-magenta">◆</span> TREASURES</h2>
+          <ul class="treasure-list" id="treasure-list" role="list"></ul>
+          <p class="board-hint" id="treasure-empty">No treasures yet — clear side quests (and story bonuses) to earn gear.</p>
+        </div>
+      </div>
     </section>
 
     <!-- RESULTS -->

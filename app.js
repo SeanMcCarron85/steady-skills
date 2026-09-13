@@ -6,7 +6,8 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "steady-skills-rpg-v3";
+  const STORAGE_KEY = "steady-skills-rpg-v4";
+  const STORAGE_KEY_V3 = "steady-skills-rpg-v3";
   const STORAGE_KEY_V2 = "steady-skills-rpg-v2";
   const XP_PER_LEVEL = 100;
 
@@ -362,6 +363,9 @@
     { id: "long", label: "LONG" },
     { id: "pony", label: "PONY" },
     { id: "bald", label: "BALD" },
+    { id: "mohawk", label: "HAWK" },
+    { id: "bob", label: "BOB" },
+    { id: "spikes", label: "SPIKE" },
   ];
   const HAIR_COLORS = [
     { id: "black", label: "BLK", color: "#1a1a1a" },
@@ -371,19 +375,37 @@
     { id: "pink", label: "PNK", color: "#ff71ce" },
     { id: "cyan", label: "CYN", color: "#01cdfe" },
   ];
+  const OUTFIT_STYLES = [
+    { id: "jacket", label: "JACKET" },
+    { id: "coat", label: "COAT" },
+    { id: "vest", label: "VEST" },
+    { id: "suit", label: "SUIT" },
+    { id: "cloak", label: "CLOAK" },
+    { id: "tech", label: "TECH" },
+    { id: "tunic", label: "TUNIC" },
+    { id: "armor", label: "ARMOR" },
+  ];
   const OUTFIT_TINTS = [
     { id: "magenta", label: "MAG", color: "#ff71ce" },
     { id: "cyan", label: "CYN", color: "#01cdfe" },
     { id: "lime", label: "LIM", color: "#05ffa1" },
     { id: "purple", label: "PRP", color: "#b967ff" },
     { id: "yellow", label: "YEL", color: "#fffb96" },
+    { id: "white", label: "WHT", color: "#f0e6ff" },
+  ];
+  const EYE_STYLES = [
+    { id: "normal", label: "NORM" },
+    { id: "wide", label: "WIDE" },
+    { id: "narrow", label: "NARW" },
+    { id: "glow", label: "GLOW" },
   ];
   const FACE_ACCENTS = [
     { id: "none", label: "NONE" },
     { id: "smile", label: "SMILE" },
     { id: "freckles", label: "FRECK" },
-    { id: "glasses", label: "GLASS" },
     { id: "blush", label: "BLUSH" },
+    { id: "paint", label: "PAINT" },
+    { id: "scar", label: "SCAR" },
   ];
   const ACCESSORIES = [
     { id: "none", label: "NONE" },
@@ -391,6 +413,11 @@
     { id: "headset", label: "HEAD" },
     { id: "badge", label: "BADGE" },
     { id: "bandana", label: "BAND" },
+    { id: "glasses", label: "GLASS" },
+    { id: "scarf", label: "SCARF" },
+    { id: "backpack", label: "PACK" },
+    { id: "crown", label: "CROWN" },
+    { id: "visor", label: "VISOR" },
   ];
 
   function defaultAvatar() {
@@ -398,11 +425,81 @@
       skin: "warm",
       hairStyle: "short",
       hairColor: "brown",
+      outfitStyle: "jacket",
       outfit: "magenta",
+      eyes: "normal",
       face: "none",
       accessory: "none",
     };
   }
+
+  /**
+   * Treasures: earnable gear that grants gentle accessibility buffs.
+   * Slots are exclusive — one equipped per slot.
+   */
+  const TREASURES = {
+    "memory-crystal": {
+      id: "memory-crystal",
+      name: "MEMORY CRYSTAL",
+      slot: "memory",
+      icon: "◆",
+      blurb: "Longer sequence lights + one free mismatch forgive on match grids.",
+      sourceHint: "Neon Alley / Signal Ghost",
+      buffs: { sequenceSlow: true, matchForgive: 1 },
+    },
+    "steady-gloves": {
+      id: "steady-gloves",
+      name: "STEADY GLOVES",
+      slot: "dexterity",
+      icon: "▮",
+      blurb: "Larger tap targets + slower despawn. Base targets stay large either way.",
+      sourceHint: "Rooftop Parcel / Plaza Relay",
+      buffs: { largerTargets: true, slowerDespawn: true },
+    },
+    "logic-prism": {
+      id: "logic-prism",
+      name: "LOGIC PRISM",
+      slot: "problem",
+      icon: "▲",
+      blurb: "One gentle hint on pattern or logic puzzles per challenge.",
+      sourceHint: "Dockside Puzzle",
+      buffs: { puzzleHint: 1 },
+    },
+    "voice-amulet": {
+      id: "voice-amulet",
+      name: "VOICE AMULET",
+      slot: "speech",
+      icon: "◎",
+      blurb: "Slower model audio + highlight the current word or phrase.",
+      sourceHint: "Waiting Room / Clinic Lullaby",
+      buffs: { slowSpeech: true, highlightWord: true },
+    },
+    "gold-charm": {
+      id: "gold-charm",
+      name: "GOLD CHARM",
+      slot: "utility",
+      icon: "★",
+      blurb: "Small XP and gold bonus on awards (~10%).",
+      sourceHint: "Story quest clear / Daily clear",
+      buffs: { xpBonusPct: 0.1, goldBonusPct: 0.1 },
+    },
+  };
+
+  const SIDE_TREASURE_REWARDS = {
+    "neon-alley": "memory-crystal",
+    "rooftop-parcel": "steady-gloves",
+    "waiting-whispers": "voice-amulet",
+    "signal-ghost": "memory-crystal",
+    "dockside-puzzle": "logic-prism",
+    "clinic-lullaby": "voice-amulet",
+    "plaza-relay": "steady-gloves",
+  };
+
+  const STORY_TREASURE_REWARDS = {
+    "lost-signal": "gold-charm",
+    "cargo-run": "gold-charm",
+    "clinic-shift": "gold-charm",
+  };
 
   /**
    * Side quests: short picture-style videos (SVG panels) + one light challenge.
@@ -525,6 +622,162 @@
       completeBeat:
         "A patient smiles. The room feels a little kinder. Whisper practice complete.",
     },
+    "signal-ghost": {
+      id: "signal-ghost",
+      name: "SIGNAL GHOST",
+      blurb: "A faint ghost channel flickers on the tower — match the frequency tiles.",
+      skill: "memory",
+      challenge: "match",
+      challengeTitle: "GHOST PAIRS",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "ghostTower",
+          caption: "Signal Tower after midnight. Static draws a soft shape in the static.",
+          duration: 5000,
+        },
+        {
+          scene: "ghostWave",
+          caption: "Tech Rin called it a ghost channel — leftover light from an old broadcast.",
+          duration: 4800,
+        },
+        {
+          scene: "ghostTiles",
+          caption: "Frequency tiles blink in pairs. No rush. Memory can be gentle.",
+          duration: 4500,
+        },
+        {
+          scene: "ghostPath",
+          caption: "You follow the hum down a service ladder. Neon paints the rails pink.",
+          duration: 4500,
+        },
+        {
+          scene: "ghostReady",
+          caption: "Match the ghost tiles. Clear the bank so the living channels stay calm.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "The ghost fades kindly. Tower lights settle. Another quiet channel restored.",
+    },
+    "dockside-puzzle": {
+      id: "dockside-puzzle",
+      name: "DOCKSIDE PUZZLE",
+      blurb: "A jammed crane lock needs pattern thinking — what comes next?",
+      skill: "problem",
+      challenge: "pattern",
+      challengeTitle: "CRANE CODE",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "dockDawn",
+          caption: "Cargo Docks at blue hour. Cranes lean like tired dinosaurs.",
+          duration: 5000,
+        },
+        {
+          scene: "dockLock",
+          caption: "Foreman Kai points at a stuck routing lock. Pattern incomplete.",
+          duration: 4800,
+        },
+        {
+          scene: "dockCodes",
+          caption: "Manifest glyphs glow on a battered pad. Think it through — slow is fine.",
+          duration: 4500,
+        },
+        {
+          scene: "dockCrane",
+          caption: "Somewhere above, a hook waits politely. No drama. Just a missing step.",
+          duration: 4500,
+        },
+        {
+          scene: "dockReady",
+          caption: "Choose what comes next in the crane code. One soft puzzle. You've got this.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "The lock clicks. The crane sighs awake. Docks keep moving — thanks to clear thinking.",
+    },
+    "clinic-lullaby": {
+      id: "clinic-lullaby",
+      name: "CLINIC LULLABY",
+      blurb: "Night ward needs calm, clear phrases — practice soft speech without pressure.",
+      skill: "speech",
+      challenge: "twister",
+      challengeTitle: "SOFT PHRASES",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "lullabyHall",
+          caption: "Clinic corridor hush. Monitors blink like slow fireflies.",
+          duration: 5000,
+        },
+        {
+          scene: "lullabyNurse",
+          caption: "A night nurse asks for help modeling clear bedside phrases.",
+          duration: 4800,
+        },
+        {
+          scene: "lullabyNotes",
+          caption: "Chart notes say: KIND VOICE. Mic never required. Pace is yours.",
+          duration: 4500,
+        },
+        {
+          scene: "lullabyWindow",
+          caption: "City neon through frosted glass. You settle your breath.",
+          duration: 4500,
+        },
+        {
+          scene: "lullabyReady",
+          caption: "Say each phrase clearly — or tap DONE when finished. Soft practice only.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "The ward feels quieter. Someone rests easier. Your voice helped — gently.",
+    },
+    "plaza-relay": {
+      id: "plaza-relay",
+      name: "PLAZA RELAY",
+      blurb: "A plaza courier handoff — steady taps on large seal lights.",
+      skill: "dexterity",
+      challenge: "targets",
+      challengeTitle: "RELAY SEALS",
+      xpBonus: 28,
+      goldBonus: 14,
+      panels: [
+        {
+          scene: "plazaNeon",
+          caption: "Neon Plaza buzzes soft. A courier baton waits on a glowing post.",
+          duration: 5000,
+        },
+        {
+          scene: "plazaCrowd",
+          caption: "People drift past. No rush. The relay is practice, not a race.",
+          duration: 4500,
+        },
+        {
+          scene: "plazaPath",
+          caption: "Seal lights bloom along the walkway — big, bright, forgiving.",
+          duration: 4500,
+        },
+        {
+          scene: "plazaBaton",
+          caption: "You lift the baton. Hands steady. City wind smells like rain and ozone.",
+          duration: 4500,
+        },
+        {
+          scene: "plazaReady",
+          caption: "Tap each seal as it lights. Miss one? The next still comes. Always.",
+          duration: 4800,
+        },
+      ],
+      completeBeat:
+        "Baton docks. Plaza neon winks. Relay complete — steady work, soft win.",
+    },
   };
 
   // ---- State ----
@@ -601,6 +854,15 @@
     btnSideSkip: $("#btn-side-skip"),
     btnSideMenu: $("#btn-side-menu"),
     sideHint: $("#side-hint"),
+    loadout: $("#view-loadout"),
+    btnLoadout: $("#btn-loadout"),
+    loadoutSummary: $("#loadout-summary"),
+    loadoutCount: $("#loadout-count"),
+    loadoutAvatar: $("#loadout-avatar"),
+    loadoutCharName: $("#loadout-char-name"),
+    activeBuffs: $("#active-buffs"),
+    treasureList: $("#treasure-list"),
+    treasureEmpty: $("#treasure-empty"),
   };
 
   // ---- Persistence ----
@@ -624,6 +886,8 @@
       activeQuestIds: [],
       completedQuestIds: [],
       completedSideQuestIds: [],
+      ownedTreasures: [],
+      equippedTreasures: {},
       questProgress: {}, // questId -> { taskIndex }
       dailyDate: todayKey(),
       dailyCompleted: false,
@@ -634,12 +898,18 @@
   function loadState() {
     try {
       let raw = localStorage.getItem(STORAGE_KEY);
-      let fromV2 = false;
+      let migrated = false;
       if (!raw) {
-        const v2 = localStorage.getItem(STORAGE_KEY_V2);
-        if (v2) {
-          raw = v2;
-          fromV2 = true;
+        const v3 = localStorage.getItem(STORAGE_KEY_V3);
+        if (v3) {
+          raw = v3;
+          migrated = true;
+        } else {
+          const v2 = localStorage.getItem(STORAGE_KEY_V2);
+          if (v2) {
+            raw = v2;
+            migrated = true;
+          }
         }
       }
       if (!raw) return defaultState();
@@ -648,12 +918,38 @@
         parsed.avatar = defaultAvatar();
       } else {
         parsed.avatar = { ...defaultAvatar(), ...parsed.avatar };
+        // v3 used face:"glasses"; v4 moves glasses to accessory
+        if (parsed.avatar.face === "glasses") {
+          if (!parsed.avatar.accessory || parsed.avatar.accessory === "none") {
+            parsed.avatar.accessory = "glasses";
+          }
+          parsed.avatar.face = "none";
+        }
+        if (!parsed.avatar.outfitStyle) parsed.avatar.outfitStyle = "jacket";
+        if (!parsed.avatar.eyes) parsed.avatar.eyes = "normal";
       }
       if (!Array.isArray(parsed.completedSideQuestIds)) {
         parsed.completedSideQuestIds = [];
       }
+      if (!Array.isArray(parsed.ownedTreasures)) {
+        parsed.ownedTreasures = [];
+      }
+      if (!parsed.equippedTreasures || typeof parsed.equippedTreasures !== "object") {
+        parsed.equippedTreasures = {};
+      }
+      // Backfill treasures for already-cleared side/story quests (migration)
+      Object.entries(SIDE_TREASURE_REWARDS).forEach(([qid, tid]) => {
+        if (parsed.completedSideQuestIds.includes(qid) && !parsed.ownedTreasures.includes(tid)) {
+          parsed.ownedTreasures.push(tid);
+        }
+      });
+      Object.entries(STORY_TREASURE_REWARDS).forEach(([qid, tid]) => {
+        if ((parsed.completedQuestIds || []).includes(qid) && !parsed.ownedTreasures.includes(tid)) {
+          parsed.ownedTreasures.push(tid);
+        }
+      });
       refreshDailyFields(parsed);
-      if (fromV2) {
+      if (migrated) {
         try {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
         } catch (_) {}
@@ -706,15 +1002,37 @@
     state.lastPlayDate = today;
   }
 
+  function getActiveBuffs() {
+    const buffs = {};
+    const eq = state.equippedTreasures || {};
+    Object.values(eq).forEach((tid) => {
+      const t = TREASURES[tid];
+      if (t && t.buffs) Object.assign(buffs, t.buffs);
+    });
+    return buffs;
+  }
+
+  function grantTreasure(treasureId, reason) {
+    if (!treasureId || !TREASURES[treasureId]) return null;
+    if (!state.ownedTreasures.includes(treasureId)) {
+      state.ownedTreasures.push(treasureId);
+      return { id: treasureId, neu: true, reason: reason || "" };
+    }
+    return { id: treasureId, neu: false, reason: reason || "" };
+  }
+
   function award(xp, gold) {
     updateStreakOnPlay();
+    const buffs = getActiveBuffs();
+    if (buffs.xpBonusPct) xp = Math.round(xp * (1 + buffs.xpBonusPct));
+    if (buffs.goldBonusPct) gold = Math.round(gold * (1 + buffs.goldBonusPct));
     const before = state.level;
     state.xp += xp;
     state.gold += gold;
     state.level = Math.floor(state.xp / XP_PER_LEVEL) + 1;
     saveState();
     refreshStatus();
-    return { leveled: state.level > before, newLevel: state.level };
+    return { leveled: state.level > before, newLevel: state.level, xp, gold };
   }
 
   // ---- Audio ----
@@ -779,6 +1097,34 @@
     return { skin, hair, outfit };
   }
 
+  function renderOutfitLayer(style, outfit, skin) {
+    const dark = "#1a1028";
+    const mid = outfit;
+    if (style === "coat") {
+      return `<rect x="10" y="40" width="44" height="22" fill="${mid}"/><rect x="18" y="40" width="28" height="8" fill="${skin}"/><rect x="30" y="48" width="4" height="14" fill="${dark}"/>`;
+    }
+    if (style === "vest") {
+      return `<rect x="16" y="42" width="32" height="18" fill="${mid}"/><rect x="22" y="42" width="20" height="10" fill="${skin}"/><rect x="28" y="44" width="8" height="14" fill="${dark}"/>`;
+    }
+    if (style === "suit") {
+      return `<rect x="14" y="42" width="36" height="18" fill="${mid}"/><rect x="28" y="42" width="8" height="18" fill="#f0e6ff"/><rect x="20" y="42" width="24" height="5" fill="${skin}"/><rect x="30" y="48" width="4" height="12" fill="${dark}"/>`;
+    }
+    if (style === "cloak") {
+      return `<rect x="8" y="38" width="48" height="24" fill="${mid}"/><rect x="18" y="40" width="28" height="8" fill="${skin}"/><rect x="12" y="44" width="8" height="16" fill="${mid}"/><rect x="44" y="44" width="8" height="16" fill="${mid}"/>`;
+    }
+    if (style === "tech") {
+      return `<rect x="14" y="42" width="36" height="18" fill="${mid}"/><rect x="20" y="42" width="24" height="6" fill="${skin}"/><rect x="22" y="50" width="20" height="4" fill="#01cdfe"/><rect x="26" y="54" width="12" height="3" fill="#05ffa1"/>`;
+    }
+    if (style === "tunic") {
+      return `<rect x="16" y="40" width="32" height="20" fill="${mid}"/><rect x="22" y="40" width="20" height="6" fill="${skin}"/><rect x="18" y="52" width="28" height="6" fill="${dark}"/>`;
+    }
+    if (style === "armor") {
+      return `<rect x="14" y="42" width="36" height="18" fill="${mid}"/><rect x="20" y="42" width="24" height="5" fill="${skin}"/><rect x="18" y="48" width="10" height="10" fill="${dark}"/><rect x="36" y="48" width="10" height="10" fill="${dark}"/><rect x="28" y="50" width="8" height="8" fill="#fffb96"/>`;
+    }
+    // jacket default
+    return `<rect x="14" y="42" width="36" height="18" fill="${mid}"/><rect x="20" y="42" width="24" height="6" fill="${skin}"/><rect x="16" y="48" width="8" height="10" fill="${dark}"/><rect x="40" y="48" width="8" height="10" fill="${dark}"/>`;
+  }
+
   function renderAvatarSVG(av, size) {
     const a = { ...defaultAvatar(), ...(av || {}) };
     const { skin, hair, outfit } = avatarColors(a);
@@ -792,18 +1138,39 @@
       hairLayer = `<rect x="16" y="8" width="32" height="14" fill="${hair}"/><rect x="14" y="20" width="8" height="22" fill="${hair}"/><rect x="42" y="20" width="8" height="22" fill="${hair}"/>`;
     } else if (a.hairStyle === "pony") {
       hairLayer = `<rect x="18" y="8" width="28" height="12" fill="${hair}"/><rect x="44" y="18" width="8" height="18" fill="${hair}"/>`;
+    } else if (a.hairStyle === "mohawk") {
+      hairLayer = `<rect x="28" y="2" width="8" height="18" fill="${hair}"/><rect x="26" y="6" width="12" height="8" fill="${hair}"/>`;
+    } else if (a.hairStyle === "bob") {
+      hairLayer = `<rect x="16" y="10" width="32" height="16" fill="${hair}"/><rect x="14" y="20" width="10" height="14" fill="${hair}"/><rect x="40" y="20" width="10" height="14" fill="${hair}"/>`;
+    } else if (a.hairStyle === "spikes") {
+      hairLayer = `<rect x="20" y="4" width="6" height="12" fill="${hair}"/><rect x="29" y="2" width="6" height="14" fill="${hair}"/><rect x="38" y="4" width="6" height="12" fill="${hair}"/><rect x="18" y="12" width="28" height="8" fill="${hair}"/>`;
+    }
+    let eyeLayer = "";
+    if (a.eyes === "wide") {
+      eyeLayer = `<rect x="22" y="22" width="6" height="6" fill="#1a1020"/><rect x="36" y="22" width="6" height="6" fill="#1a1020"/>`;
+    } else if (a.eyes === "narrow") {
+      eyeLayer = `<rect x="22" y="25" width="8" height="2" fill="#1a1020"/><rect x="34" y="25" width="8" height="2" fill="#1a1020"/>`;
+    } else if (a.eyes === "glow") {
+      eyeLayer = `<rect x="24" y="24" width="4" height="4" fill="#01cdfe"/><rect x="36" y="24" width="4" height="4" fill="#01cdfe"/><rect x="25" y="25" width="2" height="2" fill="#f0e6ff"/><rect x="37" y="25" width="2" height="2" fill="#f0e6ff"/>`;
+    } else {
+      eyeLayer = `<rect x="24" y="24" width="4" height="4" fill="#1a1020"/><rect x="36" y="24" width="4" height="4" fill="#1a1020"/>`;
     }
     let faceLayer = "";
     if (a.face === "smile") {
       faceLayer = `<rect x="26" y="30" width="12" height="2" fill="#3a2030"/><rect x="28" y="32" width="8" height="2" fill="#3a2030"/>`;
     } else if (a.face === "freckles") {
       faceLayer = `<rect x="22" y="28" width="2" height="2" fill="#a06040"/><rect x="40" y="28" width="2" height="2" fill="#a06040"/><rect x="24" y="32" width="2" height="2" fill="#a06040"/><rect x="38" y="32" width="2" height="2" fill="#a06040"/>`;
-    } else if (a.face === "glasses") {
-      faceLayer = `<rect x="20" y="24" width="10" height="8" fill="none" stroke="${outfit}" stroke-width="2"/><rect x="34" y="24" width="10" height="8" fill="none" stroke="${outfit}" stroke-width="2"/><rect x="30" y="26" width="4" height="2" fill="${outfit}"/>`;
     } else if (a.face === "blush") {
       faceLayer = `<rect x="20" y="30" width="6" height="3" fill="#ff8fab" opacity="0.7"/><rect x="38" y="30" width="6" height="3" fill="#ff8fab" opacity="0.7"/>`;
+    } else if (a.face === "paint") {
+      faceLayer = `<rect x="18" y="22" width="8" height="4" fill="${outfit}" opacity="0.85"/><rect x="38" y="22" width="8" height="4" fill="${outfit}" opacity="0.85"/><rect x="28" y="34" width="8" height="3" fill="#b967ff" opacity="0.8"/>`;
+    } else if (a.face === "scar") {
+      faceLayer = `<rect x="38" y="20" width="2" height="12" fill="#5a3040"/>`;
     }
+    let mouth = `<rect x="28" y="32" width="8" height="3" fill="#3a2030"/>`;
+    if (a.face === "smile") mouth = "";
     let accLayer = "";
+    let backAcc = "";
     if (a.accessory === "hat") {
       accLayer = `<rect x="16" y="4" width="32" height="6" fill="${outfit}"/><rect x="22" y="0" width="20" height="6" fill="${outfit}"/>`;
     } else if (a.accessory === "headset") {
@@ -812,17 +1179,28 @@
       accLayer = `<rect x="38" y="48" width="8" height="8" fill="#fffb96"/><rect x="40" y="50" width="4" height="4" fill="#05ffa1"/>`;
     } else if (a.accessory === "bandana") {
       accLayer = `<rect x="18" y="16" width="28" height="5" fill="${outfit}"/><rect x="42" y="18" width="8" height="4" fill="${outfit}"/>`;
+    } else if (a.accessory === "glasses") {
+      accLayer = `<rect x="20" y="23" width="10" height="8" fill="none" stroke="#01cdfe" stroke-width="2"/><rect x="34" y="23" width="10" height="8" fill="none" stroke="#01cdfe" stroke-width="2"/><rect x="30" y="25" width="4" height="2" fill="#01cdfe"/>`;
+    } else if (a.accessory === "scarf") {
+      accLayer = `<rect x="18" y="40" width="28" height="6" fill="#ff71ce"/><rect x="34" y="46" width="8" height="14" fill="#ff71ce"/>`;
+    } else if (a.accessory === "backpack") {
+      backAcc = `<rect x="8" y="44" width="8" height="16" fill="#3a2060"/><rect x="48" y="44" width="8" height="16" fill="#3a2060"/>`;
+      accLayer = `<rect x="10" y="46" width="4" height="10" fill="#05ffa1"/><rect x="50" y="46" width="4" height="10" fill="#05ffa1"/>`;
+    } else if (a.accessory === "crown") {
+      accLayer = `<rect x="20" y="4" width="24" height="6" fill="#fffb96"/><rect x="20" y="0" width="4" height="6" fill="#fffb96"/><rect x="30" y="0" width="4" height="6" fill="#fffb96"/><rect x="40" y="0" width="4" height="6" fill="#fffb96"/>`;
+    } else if (a.accessory === "visor") {
+      accLayer = `<rect x="18" y="22" width="28" height="8" fill="#01cdfe" opacity="0.75"/><rect x="16" y="24" width="4" height="4" fill="#05ffa1"/><rect x="44" y="24" width="4" height="4" fill="#05ffa1"/>`;
     }
+    const body = renderOutfitLayer(a.outfitStyle || "jacket", outfit, skin);
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="${s}" height="${s}" shape-rendering="crispEdges" aria-hidden="true">
       <rect width="64" height="64" fill="#0a0414"/>
+      ${backAcc}
       <rect x="18" y="14" width="28" height="28" fill="${skin}"/>
-      <rect x="24" y="24" width="4" height="4" fill="#1a1020"/>
-      <rect x="36" y="24" width="4" height="4" fill="#1a1020"/>
-      <rect x="28" y="32" width="8" height="3" fill="#3a2030"/>
+      ${eyeLayer}
+      ${mouth}
       ${hairLayer}
       ${faceLayer}
-      <rect x="14" y="42" width="36" height="18" fill="${outfit}"/>
-      <rect x="20" y="42" width="24" height="6" fill="${skin}"/>
+      ${body}
       ${accLayer}
     </svg>`;
   }
@@ -844,7 +1222,9 @@
       skin: SKIN_TONES.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
       hairStyle: HAIR_STYLES.map((o) => ({ id: o.id, label: o.label })),
       hairColor: HAIR_COLORS.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
+      outfitStyle: OUTFIT_STYLES.map((o) => ({ id: o.id, label: o.label })),
       outfit: OUTFIT_TINTS.map((o) => ({ id: o.id, label: o.label, color: o.color, swatch: true })),
+      eyes: EYE_STYLES.map((o) => ({ id: o.id, label: o.label })),
       face: FACE_ACCENTS.map((o) => ({ id: o.id, label: o.label })),
       accessory: ACCESSORIES.map((o) => ({ id: o.id, label: o.label })),
     };
@@ -903,6 +1283,7 @@
       scene: el.scene,
       side: el.side,
       challenge: el.challenge,
+      loadout: el.loadout,
       results: el.results,
     };
     Object.entries(map).forEach(([k, node]) => {
@@ -936,6 +1317,13 @@
     renderLocList();
     renderQuestLog();
     renderDailyBox();
+    if (el.loadoutSummary) {
+      const n = (state.ownedTreasures || []).length;
+      const eq = Object.keys(state.equippedTreasures || {}).length;
+      el.loadoutSummary.textContent = n
+        ? `${n} treasure${n === 1 ? "" : "s"} owned · ${eq} equipped. Open to manage buffs.`
+        : "Earn treasures from side quests. Equip for gentle skill buffs.";
+    }
   }
 
   function renderLocation() {
@@ -1004,6 +1392,15 @@
         beep(520, 0.05);
       });
       el.dialogueActions.appendChild(sideBtn);
+      const loadBtn = document.createElement("button");
+      loadBtn.type = "button";
+      loadBtn.className = "btn btn-arcade btn-secondary";
+      loadBtn.textContent = "LOADOUT / TREASURES";
+      loadBtn.addEventListener("click", () => {
+        openLoadout();
+        beep(520, 0.05);
+      });
+      el.dialogueActions.appendChild(loadBtn);
     }
   }
 
@@ -1279,24 +1676,30 @@
     // Rewards
     let xp = def.xpBonus || 30;
     let gold = def.goldBonus || 15;
-    // Per-task already awarded in finishChallenge; quest bonus here
-    const { leveled, newLevel } = award(xp, gold);
-    sfxComplete();
-
+    let grant = null;
     state.activeQuestIds = state.activeQuestIds.filter((x) => x !== id);
     delete state.questProgress[id];
     if (isDaily) {
+      const firstDaily = !state.dailyCompleted;
       state.dailyCompleted = true;
+      if (firstDaily) grant = grantTreasure("gold-charm", "daily");
     } else if (!state.completedQuestIds.includes(id)) {
       state.completedQuestIds.push(id);
+      const tid = STORY_TREASURE_REWARDS[id];
+      if (tid) grant = grantTreasure(tid, "story");
     }
+    // Per-task already awarded in finishChallenge; quest bonus here
+    const awarded = award(xp, gold);
+    const { leveled, newLevel } = awarded;
+    sfxComplete();
     saveState();
 
     el.resultsTitle.textContent = isDaily ? "DAILY CLEAR" : "QUEST COMPLETE";
     el.resultsMessage.textContent = def.completeBeat || `Well done, ${state.name}.`;
     el.resultsRewards.innerHTML = `
-      <div>QUEST BONUS +${xp} XP</div>
-      <div>QUEST BONUS +${gold} GOLD</div>
+      <div>QUEST BONUS +${awarded.xp} XP</div>
+      <div>QUEST BONUS +${awarded.gold} GOLD</div>
+      ${treasureRewardHtml(grant)}
     `;
     if (leveled) {
       el.levelupFlash.classList.remove("hidden");
@@ -1311,6 +1714,98 @@
     showView("results");
   }
 
+
+  // ---- Loadout / Treasures ----
+  function openLoadout() {
+    cleanupChallenge();
+    cleanupSideVideo();
+    activeQuest = null;
+    showView("loadout");
+    renderLoadout();
+  }
+
+  function renderLoadout() {
+    refreshStatus();
+    paintAvatar(el.loadoutAvatar, state.avatar);
+    const role = ROLES[state.role] || ROLES.medic;
+    el.loadoutCharName.textContent = `${state.name} · ${role.short} · LVL ${state.level}`;
+    const owned = state.ownedTreasures || [];
+    el.loadoutCount.textContent = `${owned.length} TREASURE${owned.length === 1 ? "" : "S"}`;
+    el.loadoutSummary.textContent = owned.length
+      ? `${owned.length} owned — equip for gentle skill buffs.`
+      : "Earn treasures from side quests. Equip for gentle skill buffs.";
+
+    const buffs = getActiveBuffs();
+    const lines = [];
+    if (buffs.sequenceSlow || buffs.matchForgive) lines.push("◆ Memory aids active");
+    if (buffs.largerTargets || buffs.slowerDespawn) lines.push("▮ Dexterity aids active");
+    if (buffs.puzzleHint) lines.push("▲ Logic hint ready");
+    if (buffs.slowSpeech || buffs.highlightWord) lines.push("◎ Speech aids active");
+    if (buffs.xpBonusPct || buffs.goldBonusPct) lines.push("★ Reward bonus ~10%");
+    el.activeBuffs.innerHTML = lines.length
+      ? `<p class="buff-heading">ACTIVE BUFFS</p><ul class="buff-list">${lines
+          .map((l) => `<li>${l}</li>`)
+          .join("")}</ul>`
+      : `<p class="board-hint">No buffs equipped yet.</p>`;
+
+    el.treasureList.innerHTML = "";
+    const allIds = Object.keys(TREASURES);
+    const showEmpty = owned.length === 0;
+    if (el.treasureEmpty) {
+      el.treasureEmpty.hidden = !showEmpty;
+      el.treasureEmpty.classList.toggle("hidden", !showEmpty);
+    }
+    allIds.forEach((tid) => {
+      const t = TREASURES[tid];
+      const have = owned.includes(tid);
+      const equippedId = (state.equippedTreasures || {})[t.slot];
+      const isEq = equippedId === tid;
+      const li = document.createElement("li");
+      li.className = "treasure-item" + (have ? "" : " locked") + (isEq ? " equipped" : "");
+      const meta = have
+        ? (isEq ? "EQUIPPED · " : "OWNED · ") + t.blurb
+        : `LOCKED · Find via: ${t.sourceHint}`;
+      li.innerHTML = `<div class="treasure-icon" aria-hidden="true">${t.icon}</div>
+        <div class="treasure-body">
+          <span class="treasure-name">${t.name}</span>
+          <span class="treasure-meta">${meta}</span>
+        </div>`;
+      const actions = document.createElement("div");
+      actions.className = "treasure-actions";
+      if (have) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn btn-arcade btn-sm " + (isEq ? "btn-ghost" : "btn-primary");
+        btn.textContent = isEq ? "UNEQUIP" : "EQUIP";
+        btn.addEventListener("click", () => {
+          if (!state.equippedTreasures) state.equippedTreasures = {};
+          if (isEq) {
+            delete state.equippedTreasures[t.slot];
+          } else {
+            state.equippedTreasures[t.slot] = tid;
+          }
+          saveState();
+          beep(520, 0.05);
+          renderLoadout();
+        });
+        actions.appendChild(btn);
+      } else {
+        const span = document.createElement("span");
+        span.className = "pill";
+        span.textContent = "—";
+        actions.appendChild(span);
+      }
+      li.appendChild(actions);
+      el.treasureList.appendChild(li);
+    });
+  }
+
+  function treasureRewardHtml(grant) {
+    if (!grant || !grant.neu) return "";
+    const t = TREASURES[grant.id];
+    if (!t) return "";
+    return `<div class="treasure-reward">TREASURE FOUND: ${t.icon} ${t.name}</div>`;
+  }
 
   // ---- Side quest picture videos ----
   function prefersReducedMotion() {
@@ -1444,6 +1939,150 @@
         <text x="160" y="130" text-anchor="middle" fill="#fffb96" font-size="14" font-family="monospace">CALM</text>
         <text x="160" y="170" text-anchor="middle" fill="#a890c0" font-size="9" font-family="monospace">YOUR PACE</text>
       `,
+      ghostTower: `
+        <rect width="320" height="200" fill="#08041a"/>
+        <rect x="130" y="30" width="60" height="140" fill="#1a0a36"/>
+        <rect x="145" y="10" width="30" height="30" fill="#2a1450"/>
+        <rect x="155" y="0" width="10" height="20" fill="#01cdfe"/>
+        <circle cx="160" cy="80" r="18" fill="#b967ff" opacity="0.35"/>
+        <text x="160" y="185" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">GHOST CH.</text>
+      `,
+      ghostWave: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <path d="M20 100 Q80 60 140 100 T260 100 T320 100" stroke="#01cdfe" stroke-width="3" fill="none"/>
+        <path d="M20 120 Q80 90 140 120 T260 120" stroke="#ff71ce" stroke-width="2" fill="none" opacity="0.7"/>
+        <text x="160" y="50" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">STATIC</text>
+      `,
+      ghostTiles: `
+        <rect width="320" height="200" fill="#0d0520"/>
+        <rect x="50" y="70" width="40" height="40" fill="#ff71ce" opacity="0.8"/>
+        <rect x="110" y="70" width="40" height="40" fill="#01cdfe" opacity="0.8"/>
+        <rect x="170" y="70" width="40" height="40" fill="#ff71ce" opacity="0.8"/>
+        <rect x="230" y="70" width="40" height="40" fill="#01cdfe" opacity="0.8"/>
+        <text x="160" y="150" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">PAIRS</text>
+      `,
+      ghostPath: `
+        <rect width="320" height="200" fill="#080314"/>
+        <rect x="140" y="20" width="40" height="160" fill="#1e0d38"/>
+        <rect x="100" y="40" width="20" height="8" fill="#ff71ce"/>
+        <rect x="200" y="80" width="20" height="8" fill="#01cdfe"/>
+        <rect x="100" y="120" width="20" height="8" fill="#05ffa1"/>
+        <text x="160" y="30" text-anchor="middle" fill="#f0e6ff" font-size="9" font-family="monospace">LADDER</text>
+      `,
+      ghostReady: `
+        <rect width="320" height="200" fill="#0d0520"/>
+        <text x="160" y="90" text-anchor="middle" fill="#b967ff" font-size="12" font-family="monospace">MATCH</text>
+        <text x="160" y="120" text-anchor="middle" fill="#01cdfe" font-size="12" font-family="monospace">THE GHOST</text>
+      `,
+      dockDawn: `
+        <rect width="320" height="200" fill="#0a1520"/>
+        <rect x="0" y="140" width="320" height="60" fill="#1a2838"/>
+        <rect x="40" y="60" width="30" height="90" fill="#3a5060"/>
+        <rect x="200" y="40" width="40" height="110" fill="#2a4050"/>
+        <rect x="210" y="30" width="80" height="10" fill="#05ffa1"/>
+        <text x="160" y="40" text-anchor="middle" fill="#01cdfe" font-size="9" font-family="monospace">DOCKS</text>
+      `,
+      dockLock: `
+        <rect width="320" height="200" fill="#0a1520"/>
+        <rect x="110" y="50" width="100" height="100" fill="#1a2838" stroke="#fffb96" stroke-width="3"/>
+        <circle cx="160" cy="100" r="16" fill="#05ffa1"/>
+        <text x="160" y="170" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">LOCK</text>
+      `,
+      dockCodes: `
+        <rect width="320" height="200" fill="#0c1822"/>
+        <rect x="40" y="70" width="50" height="40" fill="#ff71ce"/>
+        <rect x="100" y="70" width="50" height="40" fill="#01cdfe"/>
+        <rect x="160" y="70" width="50" height="40" fill="#05ffa1"/>
+        <rect x="220" y="70" width="50" height="40" fill="#2a4050" stroke="#fffb96" stroke-width="2"/>
+        <text x="245" y="95" text-anchor="middle" fill="#fffb96" font-size="14" font-family="monospace">?</text>
+        <text x="160" y="150" text-anchor="middle" fill="#a890c0" font-size="9" font-family="monospace">PATTERN</text>
+      `,
+      dockCrane: `
+        <rect width="320" height="200" fill="#0a1520"/>
+        <rect x="60" y="20" width="12" height="140" fill="#4a6080"/>
+        <rect x="60" y="20" width="140" height="10" fill="#4a6080"/>
+        <rect x="180" y="30" width="6" height="50" fill="#01cdfe"/>
+        <rect x="170" y="80" width="26" height="16" fill="#fffb96"/>
+        <text x="160" y="175" text-anchor="middle" fill="#05ffa1" font-size="9" font-family="monospace">CRANE</text>
+      `,
+      dockReady: `
+        <rect width="320" height="200" fill="#0c1822"/>
+        <text x="160" y="85" text-anchor="middle" fill="#05ffa1" font-size="12" font-family="monospace">CRANE CODE</text>
+        <text x="160" y="120" text-anchor="middle" fill="#fffb96" font-size="10" font-family="monospace">WHAT NEXT?</text>
+      `,
+      lullabyHall: `
+        <rect width="320" height="200" fill="#0c1820"/>
+        <rect x="0" y="150" width="320" height="50" fill="#1a2830"/>
+        <rect x="40" y="40" width="20" height="110" fill="#05ffa1" opacity="0.25"/>
+        <rect x="260" y="40" width="20" height="110" fill="#01cdfe" opacity="0.25"/>
+        <circle cx="80" cy="60" r="4" fill="#05ffa1"/><circle cx="120" cy="55" r="3" fill="#01cdfe"/>
+        <circle cx="200" cy="62" r="4" fill="#fffb96"/><circle cx="240" cy="58" r="3" fill="#b967ff"/>
+        <text x="160" y="100" text-anchor="middle" fill="#a890c0" font-size="9" font-family="monospace">HUSH</text>
+      `,
+      lullabyNurse: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <circle cx="160" cy="80" r="24" fill="#d4a574"/>
+        <rect x="140" y="104" width="40" height="36" fill="#05ffa1"/>
+        <text x="160" y="170" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">NIGHT NURSE</text>
+      `,
+      lullabyNotes: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <rect x="70" y="40" width="180" height="110" fill="#1a2830" stroke="#b967ff" stroke-width="3"/>
+        <text x="160" y="85" text-anchor="middle" fill="#05ffa1" font-size="10" font-family="monospace">KIND VOICE</text>
+        <text x="160" y="115" text-anchor="middle" fill="#a890c0" font-size="8" font-family="monospace">MIC OPTIONAL</text>
+      `,
+      lullabyWindow: `
+        <rect width="320" height="200" fill="#0c1820"/>
+        <rect x="80" y="30" width="160" height="100" fill="#1a2838" stroke="#01cdfe" stroke-width="3"/>
+        <rect x="100" y="50" width="40" height="20" fill="#ff71ce" opacity="0.5"/>
+        <rect x="160" y="70" width="50" height="15" fill="#05ffa1" opacity="0.4"/>
+        <text x="160" y="170" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">BREATHE</text>
+      `,
+      lullabyReady: `
+        <rect width="320" height="200" fill="#0f1a22"/>
+        <text x="160" y="80" text-anchor="middle" fill="#05ffa1" font-size="12" font-family="monospace">SOFT</text>
+        <text x="160" y="110" text-anchor="middle" fill="#01cdfe" font-size="12" font-family="monospace">PHRASES</text>
+        <text x="160" y="150" text-anchor="middle" fill="#a890c0" font-size="9" font-family="monospace">YOUR PACE</text>
+      `,
+      plazaNeon: `
+        <rect width="320" height="200" fill="#12061f"/>
+        <rect x="0" y="140" width="320" height="60" fill="#1a0a2e"/>
+        <rect x="30" y="50" width="70" height="90" fill="#2a1450"/>
+        <rect x="220" y="40" width="70" height="100" fill="#1e0d38"/>
+        <rect x="40" y="70" width="40" height="12" fill="#ff71ce"/>
+        <rect x="230" y="60" width="40" height="12" fill="#01cdfe"/>
+        <rect x="140" y="110" width="40" height="30" fill="#05ffa1"/>
+        <text x="160" y="40" text-anchor="middle" fill="#ff71ce" font-size="9" font-family="monospace">PLAZA</text>
+      `,
+      plazaCrowd: `
+        <rect width="320" height="200" fill="#10061c"/>
+        <circle cx="80" cy="120" r="14" fill="#d4a574"/><rect x="70" y="134" width="20" height="24" fill="#ff71ce"/>
+        <circle cx="160" cy="115" r="14" fill="#c68642"/><rect x="150" y="129" width="20" height="24" fill="#01cdfe"/>
+        <circle cx="240" cy="122" r="14" fill="#d4a574"/><rect x="230" y="136" width="20" height="24" fill="#b967ff"/>
+        <text x="160" y="50" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">NO RUSH</text>
+      `,
+      plazaPath: `
+        <rect width="320" height="200" fill="#0a0418"/>
+        <rect x="20" y="110" width="280" height="14" fill="#3a2060"/>
+        <circle cx="60" cy="117" r="12" fill="#ff71ce"/>
+        <circle cx="130" cy="117" r="12" fill="#01cdfe"/>
+        <circle cx="200" cy="117" r="12" fill="#05ffa1"/>
+        <circle cx="270" cy="117" r="12" fill="#fffb96"/>
+        <text x="160" y="60" text-anchor="middle" fill="#b967ff" font-size="9" font-family="monospace">SEALS</text>
+      `,
+      plazaBaton: `
+        <rect width="320" height="200" fill="#0e0620"/>
+        <rect x="140" y="60" width="40" height="80" fill="#05ffa1"/>
+        <rect x="148" y="50" width="24" height="16" fill="#01cdfe"/>
+        <text x="160" y="170" text-anchor="middle" fill="#fffb96" font-size="9" font-family="monospace">BATON</text>
+      `,
+      plazaReady: `
+        <rect width="320" height="200" fill="#0d0520"/>
+        <circle cx="100" cy="100" r="22" fill="#ff71ce"/>
+        <circle cx="160" cy="100" r="22" fill="#01cdfe"/>
+        <circle cx="220" cy="100" r="22" fill="#05ffa1"/>
+        <text x="160" y="160" text-anchor="middle" fill="#fffb96" font-size="10" font-family="monospace">TAP SEALS</text>
+      `,
     };
     const body = scenes[sceneId] || scenes.alleyNight;
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" shape-rendering="crispEdges">${body}</svg>`;
@@ -1551,19 +2190,24 @@
     }
     const xp = def.xpBonus || 28;
     const gold = def.goldBonus || 14;
-    const { leveled, newLevel } = award(xp, gold);
-    sfxComplete();
-    if (!state.completedSideQuestIds.includes(def.id)) {
+    const firstClear = !state.completedSideQuestIds.includes(def.id);
+    if (firstClear) {
       state.completedSideQuestIds.push(def.id);
     }
+    const tid = SIDE_TREASURE_REWARDS[def.id];
+    const grant = firstClear ? grantTreasure(tid, "side") : null;
+    const awarded = award(xp, gold);
+    const { leveled, newLevel } = awarded;
+    sfxComplete();
     state.activeQuestIds = state.activeQuestIds.filter((x) => x !== def.id);
     delete state.questProgress[def.id];
     saveState();
     el.resultsTitle.textContent = "SIDE QUEST CLEAR";
     el.resultsMessage.textContent = def.completeBeat;
     el.resultsRewards.innerHTML = `
-      <div>SIDE BONUS +${xp} XP</div>
-      <div>SIDE BONUS +${gold} GOLD</div>
+      <div>SIDE BONUS +${awarded.xp} XP</div>
+      <div>SIDE BONUS +${awarded.gold} GOLD</div>
+      ${treasureRewardHtml(grant)}
     `;
     if (leveled) {
       el.levelupFlash.classList.remove("hidden");
@@ -1659,11 +2303,14 @@
     let flipped = [];
     let lock = false;
     let matches = 0;
+    const buffs = getActiveBuffs();
+    let forgivesLeft = buffs.matchForgive || 0;
     chalRuntime.score = 0;
     updateChalMeta();
 
     el.chalInstructions.textContent =
-      "Flip two cards. Match the neon symbols. Clear all pairs!";
+      "Flip two cards. Match the neon symbols. Clear all pairs!" +
+      (forgivesLeft ? ` (Crystal: ${forgivesLeft} free mismatch.)` : "");
     const startBtn = document.createElement("button");
     startBtn.className = "btn btn-arcade btn-primary";
     startBtn.textContent = "START";
@@ -1721,14 +2368,26 @@
             setTimeout(() => finishChallenge({ bonusXp: 5, message: "Grid cleared!" }), 500);
           }
         } else {
-          setFeedback("No match — try again.", false);
-          sfxMiss();
-          setTimeout(() => {
-            cards[a].flipped = cards[b].flipped = false;
-            flipped = [];
-            lock = false;
-            render();
-          }, 700);
+          if (forgivesLeft > 0) {
+            forgivesLeft--;
+            setFeedback(`Crystal forgive! (${forgivesLeft} left) Try again.`, false);
+            sfxMiss();
+            setTimeout(() => {
+              cards[a].flipped = cards[b].flipped = false;
+              flipped = [];
+              lock = false;
+              render();
+            }, 500);
+          } else {
+            setFeedback("No match — try again.", false);
+            sfxMiss();
+            setTimeout(() => {
+              cards[a].flipped = cards[b].flipped = false;
+              flipped = [];
+              lock = false;
+              render();
+            }, 700);
+          }
         }
       }
     }
@@ -1746,8 +2405,12 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
+    const buffs = getActiveBuffs();
+    const stepMs = buffs.sequenceSlow ? 800 : 550;
+    const litMs = buffs.sequenceSlow ? 480 : 350;
     el.chalInstructions.textContent =
-      "Watch the light sequence, then replay it on the pads.";
+      "Watch the light sequence, then replay it on the pads." +
+      (buffs.sequenceSlow ? " (Crystal: slower display.)" : "");
 
     const display = document.createElement("div");
     display.className = "seq-display";
@@ -1803,13 +2466,37 @@
         const btn = pad.querySelector(`[data-c="${sequence[i]}"]`);
         if (btn) {
           btn.classList.add("lit");
-          setTimeout(() => btn.classList.remove("lit"), 350);
+          setTimeout(() => btn.classList.remove("lit"), litMs);
         }
         beep(400 + sequence[i] * 120, 0.12);
         i++;
-        setTimeout(step, 550);
+        setTimeout(step, stepMs);
       };
       setTimeout(step, 400);
+    }
+
+    if (buffs.sequenceSlow) {
+      const peek = document.createElement("button");
+      peek.type = "button";
+      peek.className = "btn btn-arcade btn-ghost btn-sm";
+      peek.textContent = "PEEK LAST";
+      peek.title = "Replay the last shown sequence once";
+      let peeked = false;
+      peek.addEventListener("click", () => {
+        if (!sequence.length) return;
+        if (peeked) {
+          setFeedback("Peek already used this challenge.", false);
+          return;
+        }
+        if (!accepting) {
+          setFeedback("Wait for your turn, then peek.", false);
+          return;
+        }
+        peeked = true;
+        peek.disabled = true;
+        playSequence();
+      });
+      el.chalActions.appendChild(peek);
     }
 
     function nextRound() {
@@ -1860,8 +2547,13 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
+    const buffs = getActiveBuffs();
+    const despawnMs = buffs.slowerDespawn ? 3600 : 2400;
     el.chalInstructions.textContent =
-      "Tap or click each neon target. Large hit areas — take your time.";
+      "Tap or click each neon target. Large hit areas — take your time." +
+      (buffs.largerTargets || buffs.slowerDespawn
+        ? " (Gloves: bigger / longer.)"
+        : "");
 
     const arena = document.createElement("div");
     arena.className = "target-arena";
@@ -1888,7 +2580,7 @@
       updateChalMeta();
       const t = document.createElement("button");
       t.type = "button";
-      t.className = "target";
+      t.className = "target" + (buffs.largerTargets ? " target-xl" : "");
       t.setAttribute("aria-label", `Target ${shown} of ${TOTAL}`);
       t.style.left = 15 + Math.random() * 70 + "%";
       t.style.top = 20 + Math.random() * 60 + "%";
@@ -1919,7 +2611,7 @@
           t.remove();
           spawn();
         }
-      }, 2400);
+      }, despawnMs);
     }
 
     chalRuntime._cleanup = () => clearTimeout(timer);
@@ -2088,7 +2780,11 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
-    el.chalInstructions.textContent = "Study the pattern. Choose what comes next.";
+    const buffs = getActiveBuffs();
+    let hintsLeft = buffs.puzzleHint || 0;
+    el.chalInstructions.textContent =
+      "Study the pattern. Choose what comes next." +
+      (hintsLeft ? " (Prism: one hint available.)" : "");
 
     function showPuzzle() {
       el.chalStage.innerHTML = "";
@@ -2144,6 +2840,21 @@
           grid.appendChild(b);
         });
       el.chalStage.appendChild(grid);
+
+      if (hintsLeft > 0) {
+        const hintBtn = document.createElement("button");
+        hintBtn.type = "button";
+        hintBtn.className = "btn btn-arcade btn-ghost btn-sm";
+        hintBtn.textContent = "PRISM HINT";
+        hintBtn.addEventListener("click", () => {
+          if (hintsLeft <= 0) return;
+          hintsLeft--;
+          hintBtn.disabled = true;
+          setFeedback(`Hint: look toward ${p.answer}`, true);
+          beep(600, 0.06);
+        });
+        el.chalActions.appendChild(hintBtn);
+      }
     }
 
     const startBtn = document.createElement("button");
@@ -2194,7 +2905,12 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
-    el.chalInstructions.textContent = puzzle.prompt + " Use ▲ ▼ then CHECK LOCK.";
+    const buffs = getActiveBuffs();
+    let hintsLeft = buffs.puzzleHint || 0;
+    el.chalInstructions.textContent =
+      puzzle.prompt +
+      " Use ▲ ▼ then CHECK LOCK." +
+      (hintsLeft ? " (Prism hint available.)" : "");
 
     const list = document.createElement("ul");
     list.className = "locker-list";
@@ -2260,6 +2976,25 @@
       }
     });
     el.chalActions.appendChild(check);
+    if (hintsLeft > 0) {
+      const hintBtn = document.createElement("button");
+      hintBtn.type = "button";
+      hintBtn.className = "btn btn-arcade btn-ghost btn-sm";
+      hintBtn.textContent = "PRISM HINT";
+      hintBtn.addEventListener("click", () => {
+        if (hintsLeft <= 0) return;
+        hintsLeft--;
+        hintBtn.disabled = true;
+        const sorted = [...puzzle.items].sort((a, b) => {
+          if (puzzle.compare) return puzzle.compare(a, b);
+          if (typeof a.key === "number") return a.key - b.key;
+          return String(a.key).localeCompare(String(b.key));
+        });
+        setFeedback(`Hint: first item should be ${sorted[0].label}`, true);
+        beep(600, 0.06);
+      });
+      el.chalActions.appendChild(hintBtn);
+    }
     render();
   }
 
@@ -2276,15 +3011,18 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
+    const buffs = getActiveBuffs();
+    const speechRate = buffs.slowSpeech ? 0.65 : 0.85;
     el.chalInstructions.textContent =
-      "Read each word aloud at your pace. Tap NEXT when ready. Model audio optional.";
+      "Read each word aloud at your pace. Tap NEXT when ready. Model audio optional." +
+      (buffs.slowSpeech || buffs.highlightWord ? " (Amulet: slower / highlight.)" : "");
 
     const progress = document.createElement("div");
     progress.className = "speech-progress";
     el.chalStage.appendChild(progress);
 
     const wordEl = document.createElement("div");
-    wordEl.className = "speech-word";
+    wordEl.className = "speech-word" + (buffs.highlightWord ? " speech-highlight" : "");
     wordEl.setAttribute("aria-live", "polite");
     el.chalStage.appendChild(wordEl);
 
@@ -2293,7 +3031,7 @@
       try {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.85;
+        u.rate = speechRate;
         window.speechSynthesis.speak(u);
       } catch (_) {}
     }
@@ -2343,11 +3081,14 @@
     chalRuntime.score = 0;
     updateChalMeta();
 
+    const buffs = getActiveBuffs();
+    const speechRate = buffs.slowSpeech ? 0.6 : 0.8;
     el.chalInstructions.textContent =
-      "Say each phrase clearly. Model audio optional. Mic never required — tap DONE when finished.";
+      "Say each phrase clearly. Model audio optional. Mic never required — tap DONE when finished." +
+      (buffs.slowSpeech || buffs.highlightWord ? " (Amulet aids on.)" : "");
 
     const phraseEl = document.createElement("div");
-    phraseEl.className = "speech-phrase";
+    phraseEl.className = "speech-phrase" + (buffs.highlightWord ? " speech-highlight" : "");
     phraseEl.setAttribute("aria-live", "polite");
     el.chalStage.appendChild(phraseEl);
 
@@ -2364,7 +3105,7 @@
       try {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(text);
-        u.rate = 0.8;
+        u.rate = speechRate;
         window.speechSynthesis.speak(u);
       } catch (_) {}
     }
@@ -2556,6 +3297,12 @@
           t.setAttribute("aria-selected", on ? "true" : "false");
         });
         renderQuestLog();
+        beep(520, 0.05);
+      });
+    }
+    if (el.btnLoadout) {
+      el.btnLoadout.addEventListener("click", () => {
+        openLoadout();
         beep(520, 0.05);
       });
     }
