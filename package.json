@@ -1,0 +1,25 @@
+{
+  "name": "steady-skills",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Steady Skills RPG \u2014 static web game with PWA + Capacitor native wrappers",
+  "scripts": {
+    "build": "node scripts/build-www.js",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:android": "npm run build && npx cap sync android && npx cap open android",
+    "cap:ios": "npm run build && npx cap sync ios && npx cap open ios",
+    "cap:add:android": "npx cap add android",
+    "cap:add:ios": "npx cap add ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

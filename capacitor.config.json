@@ -1,0 +1,15 @@
+{
+  "appId": "com.steadyskills.rpg",
+  "appName": "Steady Skills",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "automatic",
+    "preferredContentMode": "mobile"
+  }
+}
