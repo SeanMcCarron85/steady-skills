@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="description" content="Steady Skills RPG — 80s role-based adventure. Practice memory, dexterity, problem solving, and speech through story quests." />
+  <title>Steady Skills RPG</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎮</text></svg>" />
+</head>
+<body>
+  <div class="crt-overlay" aria-hidden="true"></div>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- TOP STATUS BAR -->
+  <header class="status-bar" id="status-bar" hidden>
+    <div class="status-inner">
+      <button type="button" id="btn-logo" class="logo-btn" aria-label="Return to hub">
+        <span class="logo-mark" aria-hidden="true">◆</span>
+        <span class="logo-text">STEADY SKILLS</span>
+      </button>
+      <div class="status-stats" aria-live="polite">
+        <span class="stat"><span class="stat-k">LVL</span> <span id="stat-level" class="neon-magenta">1</span></span>
+        <span class="xp-wrap">
+          <span class="stat-k">XP</span>
+          <span class="xp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xp-bar">
+            <span class="xp-fill" id="xp-fill"></span>
+          </span>
+          <span id="stat-xp-text" class="xp-num">0/100</span>
+        </span>
+        <span class="stat"><span class="stat-k">GOLD</span> <span id="stat-gold" class="neon-lime">0</span></span>
+        <span class="stat"><span class="stat-k">STREAK</span> <span id="stat-streak" class="neon-cyan">0</span></span>
+        <span class="stat role-tag" id="stat-role">—</span>
+      </div>
+      <button type="button" id="btn-mute" class="icon-btn" aria-pressed="false" title="Mute sounds" aria-label="Mute sounds">🔊</button>
+    </div>
+  </header>
+
+  <main id="main" class="main" tabindex="-1">
+
+    <!-- CHARACTER CREATE -->
+    <section id="view-create" class="view view-create" aria-labelledby="create-title">
+      <div class="create-panel arcade-panel">
+        <h1 id="create-title" class="view-title flicker">NEW OPERATIVE</h1>
+        <p class="lead">Sector 7 needs steady hands and clear minds. Create your character.</p>
+
+        <label class="field-label" for="create-name">CALLSIGN</label>
+        <input type="text" id="create-name" class="field-input" maxlength="16" placeholder="e.g. Nova" autocomplete="off" spellcheck="false" />
+
+        <fieldset class="role-fieldset">
+          <legend class="field-label">CLASS / ROLE</legend>
+          <p class="board-hint">Same skills for all — roles flavor the story.</p>
+          <div class="role-picks" role="radiogroup" aria-label="Choose role">
+            <label class="role-card">
+              <input type="radio" name="role" value="medic" checked />
+              <span class="role-icon" aria-hidden="true">✚</span>
+              <span class="role-name">MEDIC CADET</span>
+              <span class="role-blurb">Calm under pressure. Patient-first.</span>
+            </label>
+            <label class="role-card">
+              <input type="radio" name="role" value="scout" />
+              <span class="role-icon" aria-hidden="true">◎</span>
+              <span class="role-name">SCOUT</span>
+              <span class="role-blurb">Eyes open. Paths clear.</span>
+            </label>
+            <label class="role-card">
+              <input type="radio" name="role" value="engineer" />
+              <span class="role-icon" aria-hidden="true">⚙</span>
+              <span class="role-name">ENGINEER</span>
+              <span class="role-blurb">Systems hum when you listen.</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="button" id="btn-create" class="btn btn-arcade btn-primary">ENTER THE PLAZA →</button>
+      </div>
+    </section>
+
+    <!-- HUB / WORLD -->
+    <section id="view-hub" class="view view-hub hidden" aria-labelledby="loc-title" hidden>
+      <div class="hub-layout">
+        <div class="hub-main">
+          <div class="location-scene" id="location-scene" aria-hidden="true">
+            <div class="pixel-sky"></div>
+            <div class="pixel-neon" id="scene-neon">NEON PLAZA</div>
+            <div class="pixel-ground"></div>
+          </div>
+          <h1 id="loc-title" class="view-title">NEON PLAZA</h1>
+          <p id="loc-desc" class="lead">City lights flicker. Dispatch boards hum. Who do you talk to?</p>
+
+          <div class="dialogue-panel arcade-panel" id="dialogue-panel" role="region" aria-label="Dialogue">
+            <p class="npc-name" id="npc-name">DISPATCH</p>
+            <p class="npc-line" id="npc-line">Welcome back, operative. Check the quest log — Sector 7 needs you steady.</p>
+            <div class="dialogue-actions" id="dialogue-actions"></div>
+          </div>
+
+          <nav class="location-nav" aria-label="Locations">
+            <h2 class="board-heading"><span class="neon-cyan">◆</span> LOCATIONS</h2>
+            <ul class="loc-list" id="loc-list"></ul>
+          </nav>
+        </div>
+
+        <aside class="quest-sidebar arcade-panel" aria-label="Quest log">
+          <h2 class="board-heading"><span class="neon-magenta">◆</span> QUEST LOG</h2>
+          <div class="quest-tabs" role="tablist">
+            <button type="button" class="quest-tab active" data-tab="active" role="tab" aria-selected="true">ACTIVE</button>
+            <button type="button" class="quest-tab" data-tab="available" role="tab" aria-selected="false">AVAILABLE</button>
+            <button type="button" class="quest-tab" data-tab="completed" role="tab" aria-selected="false">DONE</button>
+          </div>
+          <ul class="quest-log-list" id="quest-log-list" role="list"></ul>
+          <div class="daily-box" id="daily-box">
+            <h3 class="daily-heading">DAILY DISPATCH <span id="daily-date" class="daily-date"></span></h3>
+            <p id="daily-summary" class="daily-summary"></p>
+            <button type="button" id="btn-daily" class="btn btn-arcade btn-secondary btn-sm">ACCEPT</button>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- QUEST SCENE (narrative) -->
+    <section id="view-scene" class="view view-scene hidden" aria-labelledby="scene-title" hidden>
+      <div class="scene-top">
+        <button type="button" class="btn btn-arcade btn-back" data-action="back-hub">◀ HUB</button>
+        <span id="quest-progress" class="pill" aria-live="polite">TASK 1/3</span>
+      </div>
+      <h1 id="scene-title" class="view-title"></h1>
+      <div class="dialogue-panel arcade-panel scene-dialogue">
+        <p class="npc-name" id="scene-npc"></p>
+        <p class="npc-line" id="scene-text"></p>
+      </div>
+      <div class="scene-actions" id="scene-actions"></div>
+    </section>
+
+    <!-- CHALLENGE -->
+    <section id="view-challenge" class="view view-challenge hidden" aria-labelledby="chal-title" hidden>
+      <div class="mission-top">
+        <button type="button" class="btn btn-arcade btn-back" data-action="abort-challenge">◀ ABORT</button>
+        <div class="mission-meta">
+          <span id="chal-skill" class="pill skill-pill">MEMORY</span>
+          <span id="chal-round" class="pill" aria-live="polite">ROUND 1</span>
+          <span id="chal-score" class="pill" aria-live="polite">SCORE 0</span>
+        </div>
+      </div>
+      <h1 id="chal-title" class="view-title"></h1>
+      <p id="chal-instructions" class="instructions"></p>
+      <div id="chal-controls" class="mission-controls"></div>
+      <div id="chal-stage" class="mission-stage" role="region" aria-label="Challenge play area"></div>
+      <div id="chal-feedback" class="feedback" role="status" aria-live="polite"></div>
+      <div id="chal-actions" class="mission-actions"></div>
+    </section>
+
+    <!-- RESULTS -->
+    <section id="view-results" class="view view-results hidden" aria-labelledby="results-title" hidden>
+      <div class="results-card arcade-panel">
+        <h1 id="results-title" class="view-title neon-lime">QUEST COMPLETE</h1>
+        <p id="results-message" class="lead"></p>
+        <div id="results-rewards" class="rewards" aria-live="polite"></div>
+        <div id="levelup-flash" class="levelup-flash hidden" hidden>
+          <p class="levelup-text">★ LEVEL UP! ★</p>
+          <p id="levelup-detail" class="levelup-detail"></p>
+        </div>
+        <div class="results-actions">
+          <button type="button" class="btn btn-arcade btn-primary" data-action="back-hub">RETURN TO HUB</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Steady Skills RPG — story quests are the practice. Progress saved in this browser. Mic never required.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
